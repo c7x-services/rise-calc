@@ -22,7 +22,6 @@
     </header>
 
     <main class="main">
-      <!-- Wizard: rebirth → balance → earnings → continue -->
       <section id="wizard" class="card wizard hidden">
         <div class="wizard__steps" id="wizard-steps">
           <span class="step step--active" data-step="0">1. Перерождение</span>
@@ -60,83 +59,64 @@
         <p class="error hidden" id="wizard-error"></p>
       </section>
 
-      <!-- Dashboard -->
       <section id="dashboard" class="dashboard hidden">
+        <p class="error hidden" id="dashboard-error"></p>
+
         <div class="grid">
           <article class="card stat">
             <h2>Цель</h2>
             <p class="stat__value" id="stat-target">—</p>
+            <div class="quick">
+              <input id="edit-rebirth" class="input input--compact" type="number" min="0" max="37" step="1" title="Перерождение" />
+              <button type="button" id="btn-apply-rebirth" class="btn btn--primary btn--sm">OK</button>
+            </div>
           </article>
+
           <article class="card stat">
             <h2>Баланс</h2>
             <p class="stat__value" id="stat-balance">—</p>
             <p class="muted" id="stat-balance-raw"></p>
+            <div class="quick">
+              <input id="edit-balance" class="input input--compact" type="text" autocomplete="off" placeholder="из HUD" />
+              <button type="button" id="btn-set-balance" class="btn btn--primary btn--sm">OK</button>
+              <button type="button" id="btn-reset-balance" class="btn btn--ghost btn--sm">Сброс</button>
+            </div>
+            <div class="quick">
+              <input id="edit-balance-sec" class="input input--compact input--sec" type="number" min="0" step="1" placeholder="N сек" />
+              <button type="button" id="btn-sub-sec" class="btn btn--ghost btn--sm">−N</button>
+              <button type="button" id="btn-add-sec" class="btn btn--primary btn--sm">+N</button>
+            </div>
+            <p class="hint hint--tight" id="hint-balance-sec">± заработок × N</p>
           </article>
+
           <article class="card stat">
             <h2>Осталось</h2>
             <p class="stat__value" id="stat-remaining">—</p>
           </article>
+
           <article class="card stat">
             <h2>ETA</h2>
             <p class="stat__value" id="stat-eta">—</p>
           </article>
+
           <article class="card stat">
             <h2>Заработок</h2>
             <p class="stat__value" id="stat-earnings">—</p>
             <p class="muted">+/с, пока вкладка открыта</p>
+            <div class="quick">
+              <input id="edit-earnings" class="input input--compact" type="text" autocomplete="off" placeholder="/сек" />
+              <button type="button" id="btn-apply-earnings" class="btn btn--primary btn--sm">OK</button>
+            </div>
           </article>
+
           <article class="card stat">
             <h2>Сессия</h2>
             <p class="stat__value" id="stat-session">—</p>
             <p class="muted" id="stat-session-detail"></p>
           </article>
         </div>
-
-        <section class="card controls">
-          <h2 class="controls__title">Настройки</h2>
-
-          <div class="controls__row">
-            <label for="edit-rebirth">Перерождение</label>
-            <div class="controls__inline">
-              <input id="edit-rebirth" class="input input--compact" type="number" min="0" max="37" step="1" />
-              <button type="button" id="btn-apply-rebirth" class="btn btn--primary">Применить</button>
-            </div>
-            <p class="hint" id="hint-edit-rebirth"></p>
-          </div>
-
-          <div class="controls__row">
-            <label for="edit-earnings">Заработок / сек</label>
-            <div class="controls__inline">
-              <input id="edit-earnings" class="input input--compact" type="text" autocomplete="off" />
-              <button type="button" id="btn-apply-earnings" class="btn btn--primary">Применить</button>
-            </div>
-          </div>
-
-          <div class="controls__row">
-            <label for="edit-balance">Баланс</label>
-            <div class="controls__inline">
-              <input id="edit-balance" class="input input--compact" type="text" autocomplete="off" placeholder="из HUD" />
-              <button type="button" id="btn-set-balance" class="btn btn--primary">Установить</button>
-              <button type="button" id="btn-reset-balance" class="btn btn--ghost">Сбросить</button>
-            </div>
-            <p class="hint">«Сбросить» — баланс в 0</p>
-          </div>
-
-          <div class="controls__row">
-            <label for="edit-balance-sec">Коррекция дохода</label>
-            <div class="controls__inline">
-              <input id="edit-balance-sec" class="input input--compact input--sec" type="number" min="0" step="1" placeholder="N" />
-              <button type="button" id="btn-sub-sec" class="btn btn--ghost">−N сек</button>
-              <button type="button" id="btn-add-sec" class="btn btn--primary">+N сек</button>
-            </div>
-            <p class="hint" id="hint-balance-sec">± заработок × N к балансу</p>
-          </div>
-
-          <p class="error hidden" id="dashboard-error"></p>
-        </section>
       </section>
 
-      <!-- Business hints placeholder -->
       <aside class="card hints" id="hints-panel">
         <div class="hints__head">
           <h2>Подсказки: бизнесы</h2>

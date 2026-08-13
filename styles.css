@@ -110,6 +110,28 @@ code {
   color: var(--ok);
 }
 
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.65rem;
+}
+
+.btn--sm {
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.hint--tight {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+}
+
+.dashboard > .error {
+  margin: 0 0 0.75rem;
+}
+
 .input {
   width: 100%;
   padding: 0.65rem 0.85rem;
@@ -225,42 +247,13 @@ code {
   margin: 0;
   flex: 1;
   min-width: 0;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.85rem;
 }
 
 .input--sec {
-  max-width: 6rem;
+  max-width: 5.5rem;
   flex: 0 0 auto;
-}
-
-.controls__title {
-  margin: 0 0 1rem;
-  font-size: 1.05rem;
-}
-
-.controls__row {
-  margin-bottom: 1.1rem;
-}
-
-.controls__row:last-child {
-  margin-bottom: 0;
-}
-
-.controls__row > label {
-  display: block;
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
-}
-
-.controls__inline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  align-items: center;
-}
-
-.controls .hint {
-  margin: 0.45rem 0 0;
 }
 
 .error {

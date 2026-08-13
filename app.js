@@ -18,13 +18,10 @@ import {
   updateAccount,
 } from "./storage.js";
 
-/** @typedef {{ id: string, name: string, rebirth: number, balance: number, balanceRaw: string, earningsPerSec: number, earningsRaw: string, setupComplete: boolean, lastTickAt: number|null, sessionEarned?: number }} Account */
-
 let state = loadState();
 let wizardStep = 0;
-/** @type {number|null} ms timestamp when balance step was confirmed */
+/** @type {number|null} */
 let balanceEnteredAt = null;
-/** seconds accrued this browser session (since setup / reset) */
 let sessionEarned = 0;
 let tickTimer = null;
 
@@ -37,11 +34,13 @@ const dashboardError = $("#dashboard-error");
 const accountSelect = $("#account-select");
 
 function showWizardError(msg) {
+  if (!wizardError) return;
   wizardError.textContent = msg;
   wizardError.classList.toggle("hidden", !msg);
 }
 
 function showDashboardError(msg) {
+  if (!dashboardError) return;
   dashboardError.textContent = msg;
   dashboardError.classList.toggle("hidden", !msg);
 }
@@ -123,7 +122,7 @@ function openWizard(prefill = true) {
 function openDashboard() {
   wizardEl.classList.add("hidden");
   dashboardEl.classList.remove("hidden");
-  renderDashboard();
+  renderDashboard({ syncInputs: true });
 }
 
 function computeStatus(acc) {
@@ -136,7 +135,11 @@ function computeStatus(acc) {
   return { rem, eta, ready, target: describeTarget(acc.rebirth) };
 }
 
-function renderDashboard() {
+function isFocused(el) {
+  return el && document.activeElement === el;
+}
+
+function renderDashboard({ syncInputs = false } = {}) {
   const acc = activeAccount();
   const st = computeStatus(acc);
   $("#stat-target").textContent = st.target;
@@ -151,32 +154,38 @@ function renderDashboard() {
   $("#stat-session").textContent = formatMoney(sessionEarned);
   $("#stat-session-detail").textContent = "только пока вкладка открыта (можно свернуть)";
 
-  $("#edit-rebirth").value = String(acc.rebirth);
-  $("#hint-edit-rebirth").textContent = describeTarget(acc.rebirth);
-  $("#edit-earnings").value = acc.earningsRaw || "";
-  $("#edit-balance").value = acc.balanceRaw || "";
+  if (syncInputs) {
+    const rebirthEl = $("#edit-rebirth");
+    const earnEl = $("#edit-earnings");
+    const balEl = $("#edit-balance");
+    if (!isFocused(rebirthEl)) rebirthEl.value = String(acc.rebirth);
+    if (!isFocused(earnEl)) earnEl.value = acc.earningsRaw || "";
+    if (!isFocused(balEl)) balEl.value = acc.balanceRaw || "";
+  }
+
   updateBalanceSecHint();
-  showDashboardError("");
 }
 
 function updateBalanceSecHint() {
   const acc = activeAccount();
+  const el = $("#hint-balance-sec");
+  if (!el) return;
   const n = Math.max(0, Math.floor(Number($("#edit-balance-sec").value) || 0));
   const delta = acc.earningsPerSec * n;
-  const el = $("#hint-balance-sec");
   if (!acc.earningsPerSec) {
-    el.textContent = "Задайте заработок, чтобы считать ±N сек";
+    el.textContent = "сначала задай заработок";
     return;
   }
   el.textContent =
     n > 0
-      ? `±${formatMoney(delta)} (${formatMoney(acc.earningsPerSec)}/с × ${n} сек)`
-      : "± заработок × N к балансу";
+      ? `±${formatMoney(delta)} (${formatMoney(acc.earningsPerSec)}/с × ${n})`
+      : "± заработок × N";
 }
 
-function applyBalancePatch(patch) {
+function applyPatch(patch) {
   updateAccount(state, patch);
-  renderDashboard();
+  renderDashboard({ syncInputs: true });
+  showDashboardError("");
 }
 
 function applyRebirthFromDashboard() {
@@ -185,7 +194,7 @@ function applyRebirthFromDashboard() {
     showDashboardError(`Перерождение: 0–${MAX_REBIRTH}`);
     return;
   }
-  applyBalancePatch({ rebirth: n });
+  applyPatch({ rebirth: n });
 }
 
 function applyEarningsFromDashboard() {
@@ -195,7 +204,7 @@ function applyEarningsFromDashboard() {
     showDashboardError("Не удалось разобрать заработок");
     return;
   }
-  applyBalancePatch({ earningsRaw: m.raw, earningsPerSec: m.nominal });
+  applyPatch({ earningsRaw: m.raw, earningsPerSec: m.nominal });
 }
 
 function setBalanceFromDashboard() {
@@ -205,11 +214,11 @@ function setBalanceFromDashboard() {
     showDashboardError("Не удалось разобрать баланс");
     return;
   }
-  applyBalancePatch({ balanceRaw: m.raw, balance: m.lower });
+  applyPatch({ balanceRaw: m.raw, balance: m.lower });
 }
 
 function resetBalanceToZero() {
-  applyBalancePatch({ balance: 0, balanceRaw: "0" });
+  applyPatch({ balance: 0, balanceRaw: "0" });
 }
 
 function adjustBalanceBySeconds(sign) {
@@ -224,8 +233,7 @@ function adjustBalanceBySeconds(sign) {
     return;
   }
   const delta = acc.earningsPerSec * n * sign;
-  const next = Math.max(0, acc.balance + delta);
-  applyBalancePatch({ balance: next });
+  applyPatch({ balance: Math.max(0, acc.balance + delta) });
 }
 
 function tick() {
@@ -239,7 +247,7 @@ function tick() {
     lastTickAt: acc.lastTickAt,
   });
   if (!dashboardEl.classList.contains("hidden")) {
-    renderDashboard();
+    renderDashboard({ syncInputs: false });
   }
 }
 
@@ -291,7 +299,6 @@ function onWizardNext() {
     balanceEnteredAt = Date.now();
     updateAccount(state, { balanceRaw: bal.raw, balance: bal.lower });
     setWizardStep(2);
-    return;
   }
 }
 
@@ -317,7 +324,6 @@ function onContinue() {
   }
 
   sessionEarned = earn.nominal * elapsedSec;
-  const now = Date.now();
 
   updateAccount(state, {
     rebirth,
@@ -326,12 +332,8 @@ function onContinue() {
     earningsPerSec: earn.nominal,
     earningsRaw: earn.raw,
     setupComplete: true,
-    lastTickAt: now,
+    lastTickAt: Date.now(),
   });
-
-  console.info(
-    `[setup] +${formatMoney(sessionEarned)} за ${formatDuration(elapsedSec)} между балансом и «Продолжить»`
-  );
 
   openDashboard();
 }
@@ -341,26 +343,28 @@ function switchAccount(id) {
   saveState(state);
   sessionEarned = 0;
   const acc = activeAccount();
-  if (acc.setupComplete) {
-    openDashboard();
-  } else {
-    openWizard(true);
+  if (acc.setupComplete) openDashboard();
+  else openWizard(true);
+}
+
+function on(id, event, handler) {
+  const el = $(id);
+  if (!el) {
+    console.warn("missing element", id);
+    return;
   }
+  el.addEventListener(event, handler);
 }
 
 function init() {
   renderAccountSelect();
   const acc = activeAccount();
-
-  if (acc.setupComplete) {
-    openDashboard();
-  } else {
-    openWizard(true);
-  }
+  if (acc.setupComplete) openDashboard();
+  else openWizard(true);
 
   startTicker();
 
-  $("#input-rebirth").addEventListener("input", () => {
+  on("#input-rebirth", "input", () => {
     const n = Number($("#input-rebirth").value) || 0;
     $("#hint-rebirth").textContent = describeTarget(Math.min(MAX_REBIRTH, Math.max(0, n)));
   });
@@ -374,30 +378,23 @@ function init() {
     });
   });
 
-  $("#btn-continue").addEventListener("click", onContinue);
-  $("#input-earnings").addEventListener("input", updateEarningsElapsedHint);
+  on("#btn-continue", "click", onContinue);
+  on("#input-earnings", "input", updateEarningsElapsedHint);
 
-  $("#btn-apply-rebirth").addEventListener("click", applyRebirthFromDashboard);
-  $("#edit-rebirth").addEventListener("input", () => {
-    const n = Number($("#edit-rebirth").value) || 0;
-    $("#hint-edit-rebirth").textContent = describeTarget(
-      Math.min(MAX_REBIRTH, Math.max(0, n))
-    );
-  });
-  $("#btn-apply-earnings").addEventListener("click", applyEarningsFromDashboard);
-  $("#btn-set-balance").addEventListener("click", setBalanceFromDashboard);
-  $("#btn-reset-balance").addEventListener("click", resetBalanceToZero);
-  $("#btn-add-sec").addEventListener("click", () => adjustBalanceBySeconds(1));
-  $("#btn-sub-sec").addEventListener("click", () => adjustBalanceBySeconds(-1));
-  $("#edit-balance-sec").addEventListener("input", updateBalanceSecHint);
-  $("#edit-earnings").addEventListener("input", updateBalanceSecHint);
+  on("#btn-apply-rebirth", "click", applyRebirthFromDashboard);
+  on("#btn-apply-earnings", "click", applyEarningsFromDashboard);
+  on("#btn-set-balance", "click", setBalanceFromDashboard);
+  on("#btn-reset-balance", "click", resetBalanceToZero);
+  on("#btn-add-sec", "click", () => adjustBalanceBySeconds(1));
+  on("#btn-sub-sec", "click", () => adjustBalanceBySeconds(-1));
+  on("#edit-balance-sec", "input", updateBalanceSecHint);
 
   accountSelect.addEventListener("change", () => {
     switchAccount(accountSelect.value);
     renderAccountSelect();
   });
 
-  $("#btn-add-account").addEventListener("click", () => {
+  on("#btn-add-account", "click", () => {
     const name = prompt("Имя аккаунта:", `Аккаунт ${state.accounts.length + 1}`);
     if (!name) return;
     addAccount(state, name.trim());
@@ -406,10 +403,10 @@ function init() {
     openWizard(false);
   });
 
-  $("#btn-del-account").addEventListener("click", () => {
-    const acc = activeAccount();
-    if (!confirm(`Удалить «${acc.name}»?`)) return;
-    if (!removeAccount(state, acc.id)) {
+  on("#btn-del-account", "click", () => {
+    const cur = activeAccount();
+    if (!confirm(`Удалить «${cur.name}»?`)) return;
+    if (!removeAccount(state, cur.id)) {
       alert("Нужен хотя бы один аккаунт.");
       return;
     }
@@ -418,9 +415,7 @@ function init() {
     switchAccount(state.activeAccountId);
   });
 
-  window.addEventListener("beforeunload", () => {
-    saveState(state);
-  });
+  window.addEventListener("beforeunload", () => saveState(state));
 }
 
 init();
