@@ -26,6 +26,9 @@ import {
   getOwned,
   nextUpgrade,
   costBetweenLevels,
+  incomeBetweenLevels,
+  totalBusinessIncome,
+  computeEarningsMultiplier,
   formatIncome,
   formatRoi,
   matchLocation,
@@ -41,6 +44,7 @@ let tickTimer = null;
 let bizCatalog = null;
 let bizShowMaxed = false;
 let bizChargeMoney = false;
+let bizAddEarnings = false;
 let bizListDirty = true;
 /** @type {string} */
 let bizPlanSignature = "";
@@ -212,6 +216,22 @@ function renderDashboard({ syncInputs = false } = {}) {
   $("#stat-eta").textContent =
     st.ready ? "ГОТОВО" : st.eta != null ? `≈ ${formatDuration(st.eta)}` : "нет заработка";
   $("#stat-earnings").textContent = acc.earningsRaw ? `+${acc.earningsRaw}/с` : "—";
+  const multEl = $("#stat-mult");
+  if (multEl) {
+    const m = Number(acc.earningsMultiplier);
+    if (Number.isFinite(m) && m > 0) {
+      const base = bizCatalog
+        ? totalBusinessIncome(bizCatalog, acc.businessLevels || {})
+        : 0;
+      multEl.textContent =
+        base > 0
+          ? `множитель ×${formatMult(m)} · база бизнесов ${formatIncome(base)}/с`
+          : `множитель ×${formatMult(m)}`;
+    } else {
+      multEl.textContent = "множитель: — (отметь уровни бизнесов и нажми «Посчитать»)";
+    }
+  }
+  syncAddEarningsToggle(acc);
   $("#stat-session").textContent = formatMoney(sessionEarned);
   $("#stat-session-detail").textContent = "только пока вкладка открыта (можно свернуть)";
 
@@ -246,6 +266,45 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
+function formatMult(m) {
+  if (!Number.isFinite(m)) return "—";
+  if (m >= 100) return m.toFixed(0);
+  if (m >= 10) return m.toFixed(1).replace(/\.0$/, "");
+  return m.toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+function formatEarningsRaw(n) {
+  const v = Number(n) || 0;
+  if (Math.abs(v) >= 1000) return formatMoney(v);
+  return formatIncome(v);
+}
+
+function knownMultiplier(acc = activeAccount()) {
+  const m = Number(acc.earningsMultiplier);
+  return Number.isFinite(m) && m > 0 ? m : null;
+}
+
+function syncAddEarningsToggle(acc = activeAccount()) {
+  const cb = $("#biz-add-earnings");
+  const label = $("#biz-add-earn-label");
+  const ok = knownMultiplier(acc) != null;
+  if (cb) {
+    cb.disabled = !ok;
+    if (!ok) {
+      cb.checked = false;
+      bizAddEarnings = false;
+    } else {
+      cb.checked = bizAddEarnings;
+    }
+  }
+  if (label) {
+    label.title = ok
+      ? "При ±/Скуплен меняет заработок на Δдоход × множитель"
+      : "Сначала посчитай множитель в блоке «Заработок»";
+    label.classList.toggle("biz-check--disabled", !ok);
+  }
+}
+
 function setBizOwned(name, level) {
   const acc = activeAccount();
   const biz = bizCatalog?.find((b) => b.name === name) || null;
@@ -257,18 +316,53 @@ function setBizOwned(name, level) {
   else levels[name] = to;
 
   const patch = { businessLevels: levels };
-  if (bizChargeMoney && biz && to !== from) {
-    const cost = costBetweenLevels(biz, from, to);
-    patch.balance = Math.max(0, acc.balance - cost);
+  if (biz && to !== from) {
+    if (bizChargeMoney) {
+      const cost = costBetweenLevels(biz, from, to);
+      patch.balance = Math.max(0, acc.balance - cost);
+    }
+    const mult = knownMultiplier(acc);
+    if (bizAddEarnings && mult != null) {
+      const baseDelta = incomeBetweenLevels(biz, from, to);
+      const nextEarn = Math.max(0, (Number(acc.earningsPerSec) || 0) + baseDelta * mult);
+      patch.earningsPerSec = nextEarn;
+      patch.earningsRaw = formatEarningsRaw(nextEarn);
+    }
   }
 
   updateAccount(state, patch);
   bizListDirty = true;
   bizPlanSignature = "";
-  if (patch.balance != null) {
-    renderDashboard({ syncInputs: false });
+  if (patch.balance != null || patch.earningsPerSec != null) {
+    renderDashboard({ syncInputs: patch.earningsPerSec != null });
+  } else {
+    renderBusinessHints({ rebuildList: true, forcePlan: true });
   }
-  renderBusinessHints({ rebuildList: true, forcePlan: true });
+}
+
+function calcEarningsMultiplier() {
+  showDashboardError("");
+  if (!bizCatalog) {
+    showDashboardError("Каталог бизнесов ещё не загружен");
+    return;
+  }
+  const acc = activeAccount();
+  const owned = acc.businessLevels || {};
+  const base = totalBusinessIncome(bizCatalog, owned);
+  if (!(base > 0)) {
+    showDashboardError("Отметь уровни купленных бизнесов (−/+/Скуплен), иначе базы нет");
+    return;
+  }
+  if (!(acc.earningsPerSec > 0)) {
+    showDashboardError("Сначала задай текущий заработок /сек");
+    return;
+  }
+  const mult = computeEarningsMultiplier(bizCatalog, owned, acc.earningsPerSec);
+  if (mult == null) {
+    showDashboardError("Не удалось посчитать множитель");
+    return;
+  }
+  applyPatch({ earningsMultiplier: mult });
 }
 
 function bizControlsHtml(biz, have) {
@@ -712,6 +806,7 @@ function init() {
 
   on("#btn-apply-rebirth", "click", applyRebirthFromDashboard);
   on("#btn-apply-earnings", "click", applyEarningsFromDashboard);
+  on("#btn-calc-mult", "click", calcEarningsMultiplier);
   on("#btn-set-balance", "click", setBalanceFromDashboard);
   on("#btn-reset-balance", "click", resetBalanceToZero);
   on("#btn-add-sec", "click", () => adjustBalanceBySeconds(1));
@@ -741,6 +836,17 @@ function init() {
 
   on("#biz-charge-money", "change", (e) => {
     bizChargeMoney = Boolean(e.target.checked);
+  });
+
+  on("#biz-add-earnings", "change", (e) => {
+    if (!knownMultiplier()) {
+      e.target.checked = false;
+      bizAddEarnings = false;
+      showDashboardError("Сначала посчитай множитель в блоке «Заработок»");
+      return;
+    }
+    bizAddEarnings = Boolean(e.target.checked);
+    showDashboardError("");
   });
 
   $("#hints-panel")?.addEventListener("click", (e) => {

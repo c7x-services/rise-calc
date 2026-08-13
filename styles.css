@@ -552,13 +552,13 @@ code {
   align-items: center;
 }
 
-.biz-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.88rem;
-  color: var(--muted);
-  cursor: pointer;
+.biz-check--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.quick--tight {
+  margin-top: 0.35rem;
 }
 
 .biz-row__lv {

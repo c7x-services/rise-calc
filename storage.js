@@ -11,6 +11,7 @@ function emptyAccount(name) {
     balanceRaw: "",
     earningsPerSec: 0,
     earningsRaw: "",
+    earningsMultiplier: null,
     setupComplete: false,
     lastTickAt: null,
     businessLevels: {},
@@ -33,6 +34,15 @@ export function loadState() {
     for (const a of data.accounts) {
       if (!a.businessLevels || typeof a.businessLevels !== "object") {
         a.businessLevels = {};
+      }
+      if (
+        a.earningsMultiplier == null ||
+        !Number.isFinite(Number(a.earningsMultiplier)) ||
+        Number(a.earningsMultiplier) <= 0
+      ) {
+        a.earningsMultiplier = null;
+      } else {
+        a.earningsMultiplier = Number(a.earningsMultiplier);
       }
     }
     return data;

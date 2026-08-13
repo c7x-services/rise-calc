@@ -100,6 +100,10 @@
               <input id="edit-earnings" class="input input--compact" type="text" autocomplete="off" placeholder="/сек" />
               <button type="button" id="btn-apply-earnings" class="btn btn--primary btn--sm">OK</button>
             </div>
+            <div class="quick quick--tight">
+              <button type="button" id="btn-calc-mult" class="btn btn--ghost btn--sm">Посчитать множитель</button>
+            </div>
+            <p class="hint hint--tight" id="stat-mult">множитель: —</p>
           </article>
 
           <article class="card stat">
@@ -150,6 +154,10 @@
               <label class="biz-check">
                 <input type="checkbox" id="biz-charge-money" />
                 списывать деньги за покупку
+              </label>
+              <label class="biz-check" id="biz-add-earn-label" title="Сначала посчитай множитель в блоке «Заработок»">
+                <input type="checkbox" id="biz-add-earnings" disabled />
+                добавлять заработок за покупку
               </label>
             </div>
             <span class="muted" id="biz-plan-age"></span>

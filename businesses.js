@@ -146,6 +146,43 @@ export function costBetweenLevels(biz, from, to) {
   return cost;
 }
 
+/** Base income delta for level change (before player multiplier). */
+export function incomeBetweenLevels(biz, from, to) {
+  const a = Math.max(0, Math.min(biz.maxLevel, Math.floor(Number(from) || 0)));
+  const b = Math.max(0, Math.min(biz.maxLevel, Math.floor(Number(to) || 0)));
+  let income = 0;
+  if (b > a) {
+    for (let i = a; i < b; i++) income += Number(biz.levels[i]?.incomeDelta) || 0;
+  } else if (b < a) {
+    for (let i = b; i < a; i++) income -= Number(biz.levels[i]?.incomeDelta) || 0;
+  }
+  return income;
+}
+
+/** Sum of catalog incomes at currently owned levels (base, no multiplier). */
+export function totalBusinessIncome(catalog, ownedLevels) {
+  let sum = 0;
+  for (const biz of catalog) {
+    const have = getOwned(ownedLevels, biz);
+    if (have <= 0) continue;
+    sum += Number(biz.levels[have - 1]?.incomeTotal) || 0;
+  }
+  return sum;
+}
+
+/**
+ * multiplier = HUD earnings / sum(business base incomes).
+ * Returns null if cannot compute.
+ */
+export function computeEarningsMultiplier(catalog, ownedLevels, earningsPerSec) {
+  const base = totalBusinessIncome(catalog, ownedLevels);
+  const earn = Number(earningsPerSec) || 0;
+  if (!(base > 0) || !(earn > 0) || !Number.isFinite(base) || !Number.isFinite(earn)) {
+    return null;
+  }
+  return earn / base;
+}
+
 /**
  * For each unlocked business, simulate dumping the entire balance into it alone
  * (buy as many consecutive levels as afford). Rank by income/price of that pack.
