@@ -462,6 +462,11 @@ code {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 
+.biz-plan__item--best {
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
 .biz-tag {
   display: inline-block;
   font-size: 0.7rem;
@@ -472,6 +477,12 @@ code {
   border-radius: 4px;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
   color: var(--accent);
+}
+
+.biz-tag--alt {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
 }
 
 .biz-plan__list {

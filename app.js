@@ -315,6 +315,7 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
     balance: acc.balance,
     ownedLevels,
   });
+  const planRank = new Map(plan.grouped.map((g, i) => [g.biz.name, i]));
   const planByName = new Map(plan.grouped.map((g) => [g.biz.name, g]));
 
   bizPlanSignature = sig;
@@ -336,7 +337,7 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
     const pb = planByName.get(b.name);
     if (pa && !pb) return -1;
     if (!pa && pb) return 1;
-    if (pa && pb) return pb.roiAvg - pa.roiAvg || pb.incomeDelta - pa.incomeDelta;
+    if (pa && pb) return planRank.get(a.name) - planRank.get(b.name);
     const oa = getOwned(ownedLevels, a);
     const ob = getOwned(ownedLevels, b);
     const ua = nextUpgrade(a, oa);
@@ -354,25 +355,30 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
       const locName = loc?.name || biz.location || "—";
       const req = biz.requirement > 0 ? `R${biz.requirement}+` : "R0+";
       const g = planByName.get(biz.name);
+      const rank = planRank.get(biz.name);
       let meta;
       if (g) {
+        const tag =
+          rank === 0
+            ? `<span class="biz-tag">лучше</span>`
+            : `<span class="biz-tag biz-tag--alt">#${rank + 1}</span>`;
         meta = `
-          <span class="biz-tag">в плане</span>
-          <span>Lv ${g.from}→${g.to}</span>
+          ${tag}
+          <span>на баланс: Lv ${g.from}→${g.to}</span>
           <span>+${formatIncome(g.incomeDelta)}/с</span>
-          <span>${formatMoney(Math.round(g.price))}</span>
+          <span>−${formatMoney(Math.round(g.price))}</span>
           <span class="muted">${formatRoi(g.roiAvg)}</span>`;
       } else if (have >= biz.maxLevel) {
         meta = `<span class="muted">полностью куплен · ${have}/${biz.maxLevel}</span>`;
       } else if (up) {
         meta = `
-          <span class="muted">след. ${formatMoney(Math.round(up.price))} → +${formatIncome(up.incomeDelta)}/с</span>
+          <span class="muted">мало денег · след. ${formatMoney(Math.round(up.price))} → +${formatIncome(up.incomeDelta)}/с</span>
           <span class="muted">${formatRoi(up.incomeDelta / up.price)}</span>`;
       } else {
         meta = `<span class="muted">—</span>`;
       }
 
-      return `<li class="biz-plan__item${g ? " biz-plan__item--plan" : ""}">
+      return `<li class="biz-plan__item${g ? " biz-plan__item--plan" : ""}${rank === 0 ? " biz-plan__item--best" : ""}">
         <div class="biz-plan__top">
           <div class="biz-plan__main">
             <strong>${escapeHtml(biz.name)}</strong>
@@ -387,11 +393,13 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
     })
     .join("");
 
-  const sum = plan.steps.length
-    ? `План: <strong>${plan.steps.length}</strong> апгрейдов ·
-        −${formatMoney(Math.round(plan.spent))} ·
-        +${formatIncome(plan.incomeGain)}/с`
-    : "План пуст — на баланс сейчас нечего выгодно купить";
+  const best = plan.grouped[0];
+  const sum = best
+    ? `Иди в <strong>${escapeHtml(best.biz.name)}</strong> и скупи на баланс:
+        Lv ${best.from}→${best.to} · −${formatMoney(Math.round(best.price))} ·
+        +${formatIncome(best.incomeDelta)}/с
+        <span class="muted"> · ROI = полный выкуп одного бизнеса, не бегай по карте</span>`
+    : "На баланс нечего купить — копи или смени R";
 
   planEl.innerHTML = `
     <div class="biz-plan__sum">${sum}</div>

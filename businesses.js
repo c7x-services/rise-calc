@@ -1,5 +1,7 @@
 /**
- * Business data + greedy ROI planner.
+ * Business data + solo-max ROI planner.
+ * For each business: spend the whole balance on it alone, score ROI,
+ * then rank — lazy player goes to one spot, not hopping the map.
  * Sources: businesses.json (explicit levels) + businesses-tiers.json (formulas).
  */
 
@@ -132,78 +134,73 @@ export function nextUpgrade(biz, owned) {
 }
 
 /**
- * Greedy: repeatedly buy the affordable next upgrade with best income/price.
- * Does not mutate owned map.
+ * For each unlocked business, simulate dumping the entire balance into it alone
+ * (buy as many consecutive levels as afford). Rank by income/price of that pack.
+ * Alternatives share the same budget — do not sum them.
  */
 export function planPurchases(catalog, { rebirth, balance, ownedLevels }) {
-  const owned = { ...(ownedLevels || {}) };
-  let budget = Math.max(0, Number(balance) || 0);
-  const steps = [];
+  const budget = Math.max(0, Number(balance) || 0);
+  const grouped = [];
 
-  for (let guard = 0; guard < 5000; guard++) {
-    let best = null;
-    for (const biz of catalog) {
-      if (rebirth < biz.requirement) continue;
-      if (!locationUnlocked(biz.location, rebirth)) continue;
-      const have = getOwned(owned, biz);
+  for (const biz of catalog) {
+    if (rebirth < biz.requirement) continue;
+    if (!locationUnlocked(biz.location, rebirth)) continue;
+
+    const from = getOwned(ownedLevels, biz);
+    let have = from;
+    let left = budget;
+    let price = 0;
+    let incomeDelta = 0;
+    const steps = [];
+
+    while (have < biz.maxLevel) {
       const up = nextUpgrade(biz, have);
-      if (!up || up.price > budget || up.price <= 0) continue;
-      const roi = up.incomeDelta / up.price;
-      if (
-        !best ||
-        roi > best.roi + 1e-15 ||
-        (Math.abs(roi - best.roi) <= 1e-15 && up.price < best.price)
-      ) {
-        best = {
-          biz,
-          from: have,
-          to: have + 1,
-          price: up.price,
-          incomeDelta: up.incomeDelta,
-          roi,
-        };
-      }
+      if (!up || up.price <= 0 || up.price > left) break;
+      left -= up.price;
+      price += up.price;
+      incomeDelta += up.incomeDelta;
+      have += 1;
+      steps.push({
+        biz,
+        from: have - 1,
+        to: have,
+        price: up.price,
+        incomeDelta: up.incomeDelta,
+        roi: up.incomeDelta / up.price,
+      });
     }
-    if (!best) break;
-    budget -= best.price;
-    owned[best.biz.name] = best.to;
-    steps.push(best);
+
+    if (have === from) continue;
+
+    grouped.push({
+      biz,
+      from,
+      to: have,
+      price,
+      incomeDelta,
+      buys: have - from,
+      roiAvg: price > 0 ? incomeDelta / price : 0,
+      left,
+      steps,
+    });
   }
 
-  // Aggregate by business for display.
-  const byName = new Map();
-  for (const s of steps) {
-    const cur = byName.get(s.biz.name) || {
-      biz: s.biz,
-      from: s.from,
-      to: s.to,
-      price: 0,
-      incomeDelta: 0,
-      buys: 0,
-    };
-    if (cur.buys === 0) cur.from = s.from;
-    cur.to = s.to;
-    cur.price += s.price;
-    cur.incomeDelta += s.incomeDelta;
-    cur.buys += 1;
-    byName.set(s.biz.name, cur);
-  }
+  grouped.sort(
+    (a, b) =>
+      b.roiAvg - a.roiAvg ||
+      b.incomeDelta - a.incomeDelta ||
+      a.price - b.price ||
+      a.biz.name.localeCompare(b.biz.name, "ru")
+  );
 
-  const grouped = [...byName.values()];
-  for (const g of grouped) {
-    g.roiAvg = g.price > 0 ? g.incomeDelta / g.price : 0;
-  }
-  grouped.sort((a, b) => b.roiAvg - a.roiAvg || b.incomeDelta - a.incomeDelta);
-
-  const spent = steps.reduce((a, s) => a + s.price, 0);
-  const incomeGain = steps.reduce((a, s) => a + s.incomeDelta, 0);
+  const best = grouped[0] || null;
 
   return {
-    steps,
+    steps: best ? best.steps : [],
     grouped,
-    spent,
-    incomeGain,
-    left: budget,
+    spent: best ? best.price : 0,
+    incomeGain: best ? best.incomeDelta : 0,
+    left: best ? best.left : budget,
   };
 }
 
