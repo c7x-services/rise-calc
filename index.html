@@ -137,17 +137,18 @@
       <aside class="card hints" id="hints-panel">
         <div class="hints__head">
           <h2>Подсказки: бизнесы</h2>
-          <span class="badge">скоро</span>
+          <span class="badge" id="biz-badge">ROI</span>
         </div>
         <div class="hints__body" id="hints-body">
-          <p class="muted">
-            Здесь будут рекомендации по покупке бизнесов под текущее перерождение и баланс.
-          </p>
-          <ul class="hints__list hints__list--placeholder">
-            <li>— приоритет апгрейдов</li>
-            <li>— что купить до следующего R</li>
-            <li>— сравнение дохода / цены</li>
-          </ul>
+          <p class="muted" id="biz-status">Загрузка каталога…</p>
+          <div id="biz-plan" class="biz-plan hidden"></div>
+          <div class="biz-toolbar hidden" id="biz-toolbar">
+            <label class="biz-check">
+              <input type="checkbox" id="biz-show-maxed" />
+              показать полностью купленные
+            </label>
+          </div>
+          <div id="biz-list" class="biz-list hidden"></div>
         </div>
       </aside>
     </main>

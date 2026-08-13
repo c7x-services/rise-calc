@@ -1,0 +1,237 @@
+/**
+ * Business data + greedy ROI planner.
+ * Sources: businesses.json (explicit levels) + businesses-tiers.json (formulas).
+ */
+
+import { locationUnlocked, matchLocation } from "./locations.js";
+
+const RAW_URLS = {
+  businesses: [
+    "./data/businesses.json",
+    "/businesses.json",
+    "../businesses.json",
+    "https://raw.githubusercontent.com/c7x-services/rise-calc/refs/heads/main/businesses.json",
+  ],
+  tiers: [
+    "./data/businesses-tiers.json",
+    "/businesses-tiers.json",
+    "../businesses-tiers.json",
+    "https://raw.githubusercontent.com/c7x-services/rise-calc/refs/heads/main/businesses-tiers.json",
+  ],
+};
+
+async function fetchFirst(urls) {
+  let lastErr = null;
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { cache: "no-cache" });
+      if (!res.ok) throw new Error(`${url} → ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error("fetch failed");
+}
+
+function stepValue(base, step, index) {
+  if (!step) return base;
+  if (step.type === "fixed") return base + index * step.value;
+  if (step.type === "multiplier") return base * step.factor ** index;
+  return base;
+}
+
+/** Expand tiers formula into cumulative {price, income} levels. */
+function expandTier(t) {
+  if (Array.isArray(t.levels) && t.levels.length) {
+    return t.levels.map((lv) => ({
+      price: Number(lv.price),
+      income: Number(lv.income),
+    }));
+  }
+  const out = [];
+  for (let i = 0; i < t.levelCount; i++) {
+    const price = stepValue(t.price1, t.priceStep, i);
+    let income;
+    if (t.incomeStep == null) {
+      income = t.income1 * (i + 1);
+    } else {
+      income = stepValue(t.income1, t.incomeStep, i);
+    }
+    out.push({ price: Number(price), income: Number(income) });
+  }
+  return out;
+}
+
+function normalizeBusiness(raw, source) {
+  const levelsRaw =
+    source === "tiers" ? expandTier(raw) : (raw.levels || []).map((lv) => ({
+      price: Number(lv.price),
+      income: Number(lv.income),
+    }));
+
+  const levels = levelsRaw.map((lv, i) => {
+    const prev = i === 0 ? 0 : levelsRaw[i - 1].income;
+    return {
+      price: lv.price,
+      incomeTotal: lv.income,
+      incomeDelta: lv.income - prev,
+    };
+  });
+
+  return {
+    id: `${source}:${raw.name}`,
+    name: raw.name,
+    coords: raw.coords || "",
+    location: raw.location || "",
+    requirement: Number(raw.requirement || 0),
+    source,
+    levels,
+    maxLevel: levels.length,
+  };
+}
+
+function mergeCatalog(businesses, tiers) {
+  const list = [
+    ...businesses.map((b) => normalizeBusiness(b, "biz")),
+    ...tiers.map((t) => normalizeBusiness(t, "tiers")),
+  ];
+  list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+  return list;
+}
+
+let catalogPromise = null;
+let catalogCache = null;
+
+export function loadCatalog() {
+  if (catalogCache) return Promise.resolve(catalogCache);
+  if (catalogPromise) return catalogPromise;
+  catalogPromise = Promise.all([
+    fetchFirst(RAW_URLS.businesses),
+    fetchFirst(RAW_URLS.tiers),
+  ])
+    .then(([businesses, tiers]) => {
+      catalogCache = mergeCatalog(businesses, tiers);
+      return catalogCache;
+    })
+    .catch((err) => {
+      catalogPromise = null;
+      throw err;
+    });
+  return catalogPromise;
+}
+
+export function getOwned(levelsMap, biz) {
+  const n = Number(levelsMap?.[biz.name] || 0);
+  return Math.max(0, Math.min(biz.maxLevel, Math.floor(n)));
+}
+
+export function nextUpgrade(biz, owned) {
+  if (owned >= biz.maxLevel) return null;
+  return biz.levels[owned];
+}
+
+/**
+ * Greedy: repeatedly buy the affordable next upgrade with best income/price.
+ * Does not mutate owned map.
+ */
+export function planPurchases(catalog, { rebirth, balance, ownedLevels }) {
+  const owned = { ...(ownedLevels || {}) };
+  let budget = Math.max(0, Number(balance) || 0);
+  const steps = [];
+
+  for (let guard = 0; guard < 5000; guard++) {
+    let best = null;
+    for (const biz of catalog) {
+      if (rebirth < biz.requirement) continue;
+      if (!locationUnlocked(biz.location, rebirth)) continue;
+      const have = getOwned(owned, biz);
+      const up = nextUpgrade(biz, have);
+      if (!up || up.price > budget || up.price <= 0) continue;
+      const roi = up.incomeDelta / up.price;
+      if (
+        !best ||
+        roi > best.roi + 1e-15 ||
+        (Math.abs(roi - best.roi) <= 1e-15 && up.price < best.price)
+      ) {
+        best = {
+          biz,
+          from: have,
+          to: have + 1,
+          price: up.price,
+          incomeDelta: up.incomeDelta,
+          roi,
+        };
+      }
+    }
+    if (!best) break;
+    budget -= best.price;
+    owned[best.biz.name] = best.to;
+    steps.push(best);
+  }
+
+  // Aggregate by business for display.
+  const byName = new Map();
+  for (const s of steps) {
+    const cur = byName.get(s.biz.name) || {
+      biz: s.biz,
+      from: s.from,
+      to: s.to,
+      price: 0,
+      incomeDelta: 0,
+      buys: 0,
+    };
+    if (cur.buys === 0) cur.from = s.from;
+    cur.to = s.to;
+    cur.price += s.price;
+    cur.incomeDelta += s.incomeDelta;
+    cur.buys += 1;
+    byName.set(s.biz.name, cur);
+  }
+
+  const grouped = [...byName.values()];
+  for (const g of grouped) {
+    g.roiAvg = g.price > 0 ? g.incomeDelta / g.price : 0;
+  }
+  grouped.sort((a, b) => b.roiAvg - a.roiAvg || b.incomeDelta - a.incomeDelta);
+
+  const spent = steps.reduce((a, s) => a + s.price, 0);
+  const incomeGain = steps.reduce((a, s) => a + s.incomeDelta, 0);
+
+  return {
+    steps,
+    grouped,
+    spent,
+    incomeGain,
+    left: budget,
+  };
+}
+
+export function listVisibleBusinesses(catalog, { rebirth, ownedLevels, showMaxed = false }) {
+  return catalog.filter((biz) => {
+    if (rebirth < biz.requirement) return false;
+    if (!locationUnlocked(biz.location, rebirth)) return false;
+    const have = getOwned(ownedLevels, biz);
+    if (!showMaxed && have >= biz.maxLevel) return false;
+    return true;
+  });
+}
+
+export function formatIncome(n) {
+  if (!Number.isFinite(n)) return "—";
+  const abs = Math.abs(n);
+  if (abs >= 100) return String(Math.round(n));
+  if (abs >= 10) return n.toFixed(1).replace(/\.0$/, "");
+  if (abs >= 1) return n.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+  return n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+export function formatRoi(roi) {
+  if (!Number.isFinite(roi) || roi <= 0) return "—";
+  // income per 1K spent
+  const perK = roi * 1000;
+  if (perK >= 1) return `${perK.toFixed(2)}/1K`;
+  return `${(roi * 1e6).toFixed(2)}/1M`;
+}
+
+export { matchLocation, locationUnlocked };

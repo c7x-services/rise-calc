@@ -13,6 +13,7 @@ function emptyAccount(name) {
     earningsRaw: "",
     setupComplete: false,
     lastTickAt: null,
+    businessLevels: {},
     createdAt: Date.now(),
   };
 }
@@ -28,6 +29,11 @@ export function loadState() {
     if (!Array.isArray(data.accounts) || data.accounts.length === 0) {
       const acc = emptyAccount("Аккаунт 1");
       return { accounts: [acc], activeAccountId: acc.id };
+    }
+    for (const a of data.accounts) {
+      if (!a.businessLevels || typeof a.businessLevels !== "object") {
+        a.businessLevels = {};
+      }
     }
     return data;
   } catch {

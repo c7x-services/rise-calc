@@ -19,6 +19,16 @@ import {
   renameAccount,
   updateAccount,
 } from "./storage.js";
+import {
+  loadCatalog,
+  planPurchases,
+  listVisibleBusinesses,
+  getOwned,
+  nextUpgrade,
+  formatIncome,
+  formatRoi,
+  matchLocation,
+} from "./businesses.js";
 
 let state = loadState();
 let wizardStep = 0;
@@ -26,6 +36,10 @@ let wizardStep = 0;
 let balanceEnteredAt = null;
 let sessionEarned = 0;
 let tickTimer = null;
+/** @type {Awaited<ReturnType<typeof loadCatalog>>|null} */
+let bizCatalog = null;
+let bizShowMaxed = false;
+let bizListDirty = true;
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -211,6 +225,140 @@ function renderDashboard({ syncInputs = false } = {}) {
   }
 
   updateBalanceSecHint();
+  renderBusinessHints({ rebuildList: syncInputs || bizListDirty });
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function setBizOwned(name, level) {
+  const acc = activeAccount();
+  const levels = { ...(acc.businessLevels || {}) };
+  const n = Math.max(0, Math.floor(Number(level) || 0));
+  if (n <= 0) delete levels[name];
+  else levels[name] = n;
+  updateAccount(state, { businessLevels: levels });
+  bizListDirty = true;
+  renderBusinessHints({ rebuildList: true });
+}
+
+function renderBusinessHints({ rebuildList = false } = {}) {
+  const status = $("#biz-status");
+  const planEl = $("#biz-plan");
+  const listEl = $("#biz-list");
+  const toolbar = $("#biz-toolbar");
+  if (!status || !planEl || !listEl) return;
+
+  if (!bizCatalog) {
+    status.textContent = "Загрузка каталога…";
+    status.classList.remove("hidden");
+    planEl.classList.add("hidden");
+    listEl.classList.add("hidden");
+    toolbar?.classList.add("hidden");
+    return;
+  }
+
+  const acc = activeAccount();
+  if (!acc.setupComplete) {
+    status.textContent = "Сначала заверши мастер ввода (перерождение → баланс → заработок).";
+    status.classList.remove("hidden");
+    planEl.classList.add("hidden");
+    listEl.classList.add("hidden");
+    toolbar?.classList.add("hidden");
+    return;
+  }
+
+  status.classList.add("hidden");
+  toolbar?.classList.remove("hidden");
+  planEl.classList.remove("hidden");
+
+  const ownedLevels = acc.businessLevels || {};
+  const plan = planPurchases(bizCatalog, {
+    rebirth: acc.rebirth,
+    balance: acc.balance,
+    ownedLevels,
+  });
+
+  if (!plan.steps.length) {
+    planEl.innerHTML =
+      `<p class="muted">Нечего купить на текущий баланс (или всё выкуплено / закрыто по R).</p>`;
+  } else {
+    const rows = plan.grouped
+      .map((g) => {
+        const loc = matchLocation(g.biz.location);
+        const locName = loc?.name || g.biz.location || "—";
+        return `<li class="biz-plan__item">
+          <div class="biz-plan__main">
+            <strong>${escapeHtml(g.biz.name)}</strong>
+            <span class="muted">Lv ${g.from}→${g.to} · ${escapeHtml(locName)}</span>
+          </div>
+          <div class="biz-plan__meta">
+            <span>+${formatIncome(g.incomeDelta)}/с</span>
+            <span>${formatMoney(Math.round(g.price))}</span>
+            <span class="muted">${formatRoi(g.roiAvg)}</span>
+          </div>
+          ${g.biz.coords ? `<code class="biz-coords">${escapeHtml(g.biz.coords)}</code>` : ""}
+        </li>`;
+      })
+      .join("");
+    planEl.innerHTML = `
+      <div class="biz-plan__sum">
+        План: <strong>${plan.steps.length}</strong> апгрейдов ·
+        −${formatMoney(Math.round(plan.spent))} ·
+        +${formatIncome(plan.incomeGain)}/с
+      </div>
+      <ol class="biz-plan__list">${rows}</ol>`;
+  }
+
+  if (rebuildList || bizListDirty) {
+    const visible = listVisibleBusinesses(bizCatalog, {
+      rebirth: acc.rebirth,
+      ownedLevels,
+      showMaxed: bizShowMaxed,
+    });
+    visible.sort((a, b) => {
+      const oa = getOwned(ownedLevels, a);
+      const ob = getOwned(ownedLevels, b);
+      const ua = nextUpgrade(a, oa);
+      const ub = nextUpgrade(b, ob);
+      const ra = ua && ua.price > 0 ? ua.incomeDelta / ua.price : -1;
+      const rb = ub && ub.price > 0 ? ub.incomeDelta / ub.price : -1;
+      return rb - ra || a.name.localeCompare(b.name, "ru");
+    });
+
+    listEl.classList.remove("hidden");
+    listEl.innerHTML =
+      visible
+        .map((biz) => {
+          const have = getOwned(ownedLevels, biz);
+          const up = nextUpgrade(biz, have);
+          const loc = matchLocation(biz.location);
+          const locName = loc?.name || biz.location || "—";
+          const nextMeta = up
+            ? `след. ${formatMoney(Math.round(up.price))} → +${formatIncome(up.incomeDelta)}/с`
+            : "макс";
+          return `<div class="biz-row" data-biz="${escapeHtml(biz.name)}">
+          <div class="biz-row__info">
+            <strong>${escapeHtml(biz.name)}</strong>
+            <span class="muted">${escapeHtml(locName)}${biz.requirement ? ` · R${biz.requirement}+` : ""}</span>
+            <span class="muted">${nextMeta}</span>
+            ${biz.coords ? `<code class="biz-coords">${escapeHtml(biz.coords)}</code>` : ""}
+          </div>
+          <div class="biz-row__lv">
+            <button type="button" class="btn btn--ghost btn--sm biz-minus" data-name="${escapeHtml(biz.name)}">−</button>
+            <span class="biz-lv">${have}/${biz.maxLevel}</span>
+            <button type="button" class="btn btn--ghost btn--sm biz-plus" data-name="${escapeHtml(biz.name)}" data-max="${biz.maxLevel}">+</button>
+          </div>
+        </div>`;
+        })
+        .join("") || `<p class="muted">Нет доступных бизнесов для R${acc.rebirth}.</p>`;
+    bizListDirty = false;
+  }
 }
 
 function updateBalanceSecHint() {
@@ -389,6 +537,7 @@ function switchAccount(id) {
   state.activeAccountId = id;
   saveState(state);
   sessionEarned = 0;
+  bizListDirty = true;
   const acc = activeAccount();
   if (acc.setupComplete) openDashboard();
   else openWizard(true);
@@ -410,6 +559,21 @@ function init() {
   else openWizard(true);
 
   startTicker();
+
+  loadCatalog()
+    .then((cat) => {
+      bizCatalog = cat;
+      bizListDirty = true;
+      renderBusinessHints({ rebuildList: true });
+    })
+    .catch((err) => {
+      console.error(err);
+      const status = $("#biz-status");
+      if (status) {
+        status.classList.remove("hidden");
+        status.textContent = "Не удалось загрузить businesses.json";
+      }
+    });
 
   on("#input-rebirth", "input", () => {
     const n = Number($("#input-rebirth").value) || 0;
@@ -435,6 +599,27 @@ function init() {
   on("#btn-add-sec", "click", () => adjustBalanceBySeconds(1));
   on("#btn-sub-sec", "click", () => adjustBalanceBySeconds(-1));
   on("#edit-balance-sec", "input", updateBalanceSecHint);
+
+  on("#biz-show-maxed", "change", (e) => {
+    bizShowMaxed = Boolean(e.target.checked);
+    bizListDirty = true;
+    renderBusinessHints({ rebuildList: true });
+  });
+
+  $("#biz-list")?.addEventListener("click", (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const name = t.dataset.name;
+    if (!name) return;
+    const acc = activeAccount();
+    const have = Number(acc.businessLevels?.[name] || 0);
+    if (t.classList.contains("biz-minus")) {
+      setBizOwned(name, have - 1);
+    } else if (t.classList.contains("biz-plus")) {
+      const max = Number(t.dataset.max || 99);
+      setBizOwned(name, Math.min(max, have + 1));
+    }
+  });
 
   accountSelect.addEventListener("change", () => {
     switchAccount(accountSelect.value);
