@@ -25,6 +25,7 @@ import {
   listVisibleBusinesses,
   getOwned,
   nextUpgrade,
+  costBetweenLevels,
   formatIncome,
   formatRoi,
   matchLocation,
@@ -39,6 +40,7 @@ let tickTimer = null;
 /** @type {Awaited<ReturnType<typeof loadCatalog>>|null} */
 let bizCatalog = null;
 let bizShowMaxed = false;
+let bizChargeMoney = false;
 let bizListDirty = true;
 /** @type {string} */
 let bizPlanSignature = "";
@@ -246,13 +248,26 @@ function escapeHtml(s) {
 
 function setBizOwned(name, level) {
   const acc = activeAccount();
+  const biz = bizCatalog?.find((b) => b.name === name) || null;
+  const from = biz ? getOwned(acc.businessLevels, biz) : Number(acc.businessLevels?.[name] || 0);
   const levels = { ...(acc.businessLevels || {}) };
   const n = Math.max(0, Math.floor(Number(level) || 0));
-  if (n <= 0) delete levels[name];
-  else levels[name] = n;
-  updateAccount(state, { businessLevels: levels });
+  const to = biz ? Math.min(biz.maxLevel, n) : n;
+  if (to <= 0) delete levels[name];
+  else levels[name] = to;
+
+  const patch = { businessLevels: levels };
+  if (bizChargeMoney && biz && to !== from) {
+    const cost = costBetweenLevels(biz, from, to);
+    patch.balance = Math.max(0, acc.balance - cost);
+  }
+
+  updateAccount(state, patch);
   bizListDirty = true;
   bizPlanSignature = "";
+  if (patch.balance != null) {
+    renderDashboard({ syncInputs: false });
+  }
   renderBusinessHints({ rebuildList: true, forcePlan: true });
 }
 
@@ -322,10 +337,6 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
   bizPlanAt = now;
   bizListDirty = false;
 
-  planEl.classList.remove("biz-plan--flash");
-  void planEl.offsetWidth;
-  planEl.classList.add("biz-plan--flash");
-
   const visible = listVisibleBusinesses(bizCatalog, {
     rebirth: acc.rebirth,
     ownedLevels,
@@ -378,7 +389,7 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
         meta = `<span class="muted">—</span>`;
       }
 
-      return `<li class="biz-plan__item${g ? " biz-plan__item--plan" : ""}${rank === 0 ? " biz-plan__item--best" : ""}">
+      return `<li class="biz-plan__item${g ? " biz-plan__item--plan" : ""}${rank === 0 ? " biz-plan__item--best" : ""}" data-biz="${escapeHtml(biz.name)}">
         <div class="biz-plan__top">
           <div class="biz-plan__main">
             <strong>${escapeHtml(biz.name)}</strong>
@@ -411,13 +422,61 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
     sum = "На баланс нечего купить — копи или смени R";
   }
 
-  planEl.innerHTML = `
+  const html = `
     <div class="biz-plan__sum">${sum}</div>
     <ol class="biz-plan__list">${
       rows || `<p class="muted">Нет доступных бизнесов для R${acc.rebirth}.</p>`
     }</ol>`;
 
+  animateBizPlanReorder(planEl, html);
+
   if (ageEl) ageEl.textContent = "обновлено только что";
+}
+
+/** FLIP: existing cards slide to new slots; newcomers ease in. */
+function animateBizPlanReorder(planEl, html) {
+  const list = planEl.querySelector(".biz-plan__list");
+  const first = new Map();
+  if (list) {
+    for (const el of list.querySelectorAll(".biz-plan__item[data-biz]")) {
+      first.set(el.dataset.biz, el.getBoundingClientRect());
+    }
+  }
+  const scrollTop = list?.scrollTop ?? 0;
+
+  planEl.innerHTML = html;
+
+  const list2 = planEl.querySelector(".biz-plan__list");
+  if (list2) list2.scrollTop = scrollTop;
+
+  if (
+    !list2 ||
+    typeof list2.querySelector !== "function" ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return;
+  }
+
+  for (const el of list2.querySelectorAll(".biz-plan__item[data-biz]")) {
+    const prev = first.get(el.dataset.biz);
+    const last = el.getBoundingClientRect();
+    if (prev) {
+      const dy = prev.top - last.top;
+      if (Math.abs(dy) < 0.5) continue;
+      el.animate(
+        [{ transform: `translateY(${dy}px)` }, { transform: "translateY(0)" }],
+        { duration: 480, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+      );
+    } else if (first.size) {
+      el.animate(
+        [
+          { opacity: 0, transform: "translateY(12px) scale(0.98)" },
+          { opacity: 1, transform: "translateY(0) scale(1)" },
+        ],
+        { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+      );
+    }
+  }
 }
 
 function updateBalanceSecHint() {
@@ -678,6 +737,10 @@ function init() {
     bizShowMaxed = Boolean(e.target.checked);
     bizListDirty = true;
     renderBusinessHints({ rebuildList: true, forcePlan: true });
+  });
+
+  on("#biz-charge-money", "change", (e) => {
+    bizChargeMoney = Boolean(e.target.checked);
   });
 
   $("#hints-panel")?.addEventListener("click", (e) => {

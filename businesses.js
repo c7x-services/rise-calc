@@ -133,6 +133,19 @@ export function nextUpgrade(biz, owned) {
   return biz.levels[owned];
 }
 
+/** Cost to go from → to levels. Positive = pay, negative = refund. */
+export function costBetweenLevels(biz, from, to) {
+  const a = Math.max(0, Math.min(biz.maxLevel, Math.floor(Number(from) || 0)));
+  const b = Math.max(0, Math.min(biz.maxLevel, Math.floor(Number(to) || 0)));
+  let cost = 0;
+  if (b > a) {
+    for (let i = a; i < b; i++) cost += Number(biz.levels[i]?.price) || 0;
+  } else if (b < a) {
+    for (let i = b; i < a; i++) cost -= Number(biz.levels[i]?.price) || 0;
+  }
+  return cost;
+}
+
 /**
  * For each unlocked business, simulate dumping the entire balance into it alone
  * (buy as many consecutive levels as afford). Rank by income/price of that pack.
