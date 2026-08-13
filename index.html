@@ -93,22 +93,36 @@
           </article>
 
           <article class="card stat">
-            <h2>Осталось</h2>
-            <p class="stat__value" id="stat-remaining">—</p>
-          </article>
-
-          <article class="card stat">
-            <h2>ETA</h2>
-            <p class="stat__value" id="stat-eta">—</p>
-          </article>
-
-          <article class="card stat">
             <h2>Заработок</h2>
             <p class="stat__value" id="stat-earnings">—</p>
             <p class="muted">+/с, пока вкладка открыта</p>
             <div class="quick">
               <input id="edit-earnings" class="input input--compact" type="text" autocomplete="off" placeholder="/сек" />
               <button type="button" id="btn-apply-earnings" class="btn btn--primary btn--sm">OK</button>
+            </div>
+          </article>
+
+          <article class="card stat">
+            <h2>Осталось</h2>
+            <p class="stat__value" id="stat-remaining">—</p>
+          </article>
+
+          <article class="card stat stat--wide">
+            <h2>ETA</h2>
+            <div class="eta-row">
+              <div class="eta-ring-wrap hidden" id="eta-ring-wrap">
+                <svg class="eta-ring" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="eta-ring__track" cx="60" cy="60" r="52" />
+                  <circle class="eta-ring__prog" id="eta-ring-prog" cx="60" cy="60" r="52" />
+                </svg>
+                <div class="eta-ring__label">
+                  <span id="eta-ring-text">—</span>
+                </div>
+              </div>
+              <div class="eta-copy">
+                <p class="stat__value" id="stat-eta">—</p>
+                <p class="muted" id="stat-eta-hint"></p>
+              </div>
             </div>
           </article>
 

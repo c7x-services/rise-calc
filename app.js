@@ -1,6 +1,7 @@
 import {
   describeTarget,
   remainingToRebirth,
+  nextCostNominal,
   MAX_REBIRTH,
 } from "./costs.js";
 import {
@@ -126,18 +127,56 @@ function openDashboard() {
   renderDashboard({ syncInputs: true });
 }
 
+const ETA_RING_MAX_S = 14 * 24 * 3600;
+const ETA_RING_R = 52;
+const ETA_RING_C = 2 * Math.PI * ETA_RING_R;
+
 function computeStatus(acc) {
   const rem = remainingToRebirth(acc.rebirth, acc.balance, parseMoney);
+  const need = nextCostNominal(acc.rebirth, parseMoney);
   let eta = null;
   const ready = rem !== null && rem <= 0;
   if (rem !== null && rem > 0 && acc.earningsPerSec > 0) {
     eta = rem / acc.earningsPerSec;
   }
-  return { rem, eta, ready, target: describeTarget(acc.rebirth) };
+  return { rem, need, eta, ready, target: describeTarget(acc.rebirth) };
 }
 
 function isFocused(el) {
   return el && document.activeElement === el;
+}
+
+function updateEtaRing(st) {
+  const wrap = $("#eta-ring-wrap");
+  const prog = $("#eta-ring-prog");
+  const text = $("#eta-ring-text");
+  const hint = $("#stat-eta-hint");
+  if (!wrap || !prog || !text) return;
+
+  const show =
+    st.eta != null &&
+    Number.isFinite(st.eta) &&
+    st.eta > 0 &&
+    st.eta <= ETA_RING_MAX_S &&
+    st.need != null &&
+    st.need > 0 &&
+    st.rem != null;
+
+  wrap.classList.toggle("hidden", !show);
+  if (hint) {
+    hint.textContent = show
+      ? "круг — доля оставшегося до R"
+      : st.eta != null && st.eta > ETA_RING_MAX_S
+        ? "круг скрыт (>14 дн.)"
+        : "";
+  }
+  if (!show) return;
+
+  // Remaining fraction of rebirth cost (1 = только начали, 0 = готово).
+  const left = Math.min(1, Math.max(0, st.rem / st.need));
+  prog.style.strokeDasharray = String(ETA_RING_C);
+  prog.style.strokeDashoffset = String(ETA_RING_C * (1 - left));
+  text.textContent = formatDuration(st.eta);
 }
 
 function renderDashboard({ syncInputs = false } = {}) {
@@ -150,10 +189,12 @@ function renderDashboard({ syncInputs = false } = {}) {
   $("#stat-remaining").textContent =
     st.rem == null ? "макс" : st.ready ? "ГОТОВО" : formatMoney(st.rem);
   $("#stat-eta").textContent =
-    st.ready ? "—" : st.eta != null ? `≈ ${formatDuration(st.eta)}` : "нет заработка";
+    st.ready ? "ГОТОВО" : st.eta != null ? `≈ ${formatDuration(st.eta)}` : "нет заработка";
   $("#stat-earnings").textContent = acc.earningsRaw ? `+${acc.earningsRaw}/с` : "—";
   $("#stat-session").textContent = formatMoney(sessionEarned);
   $("#stat-session-detail").textContent = "только пока вкладка открыта (можно свернуть)";
+
+  updateEtaRing(st);
 
   if (syncInputs) {
     const rebirthEl = $("#edit-rebirth");
