@@ -16,6 +16,7 @@
       <div class="header__accounts">
         <label class="sr-only" for="account-select">Аккаунт</label>
         <select id="account-select" class="select"></select>
+        <button type="button" id="btn-rename-account" class="btn btn--ghost" title="Переименовать">✎</button>
         <button type="button" id="btn-add-account" class="btn btn--ghost" title="Новый аккаунт">+</button>
         <button type="button" id="btn-del-account" class="btn btn--ghost btn--danger" title="Удалить аккаунт">×</button>
       </div>
@@ -72,14 +73,16 @@
             </div>
           </article>
 
-          <article class="card stat">
+          <article class="card stat stat--wide">
             <h2>Баланс</h2>
             <p class="stat__value" id="stat-balance">—</p>
             <p class="muted" id="stat-balance-raw"></p>
-            <div class="quick">
-              <input id="edit-balance" class="input input--compact" type="text" autocomplete="off" placeholder="из HUD" />
-              <button type="button" id="btn-set-balance" class="btn btn--primary btn--sm">OK</button>
-              <button type="button" id="btn-reset-balance" class="btn btn--ghost btn--sm">Сброс</button>
+            <div class="quick quick--stack">
+              <input id="edit-balance" class="input input--compact input--grow" type="text" autocomplete="off" placeholder="из HUD, напр. 38.97K" />
+              <div class="quick__btns">
+                <button type="button" id="btn-set-balance" class="btn btn--primary btn--sm">OK</button>
+                <button type="button" id="btn-reset-balance" class="btn btn--ghost btn--sm">Сброс</button>
+              </div>
             </div>
             <div class="quick">
               <input id="edit-balance-sec" class="input input--compact input--sec" type="number" min="0" step="1" placeholder="N сек" />

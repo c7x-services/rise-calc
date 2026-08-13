@@ -15,6 +15,7 @@ import {
   getActiveAccount,
   addAccount,
   removeAccount,
+  renameAccount,
   updateAccount,
 } from "./storage.js";
 
@@ -391,6 +392,17 @@ function init() {
 
   accountSelect.addEventListener("change", () => {
     switchAccount(accountSelect.value);
+    renderAccountSelect();
+  });
+
+  on("#btn-rename-account", "click", () => {
+    const cur = activeAccount();
+    const name = prompt("Новое имя аккаунта:", cur.name);
+    if (name == null) return;
+    if (!renameAccount(state, cur.id, name)) {
+      alert("Имя не может быть пустым.");
+      return;
+    }
     renderAccountSelect();
   });
 

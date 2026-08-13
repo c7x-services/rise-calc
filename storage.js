@@ -62,6 +62,16 @@ export function removeAccount(state, id) {
   return true;
 }
 
+export function renameAccount(state, id, name) {
+  const acc = state.accounts.find((a) => a.id === id);
+  if (!acc) return null;
+  const next = (name || "").trim();
+  if (!next) return null;
+  acc.name = next;
+  saveState(state);
+  return acc;
+}
+
 export function updateAccount(state, patch) {
   const acc = getActiveAccount(state);
   Object.assign(acc, patch);
