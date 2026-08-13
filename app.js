@@ -108,6 +108,7 @@ function updateEarningsElapsedHint() {
 function openWizard(prefill = true) {
   wizardEl.classList.remove("hidden");
   dashboardEl.classList.add("hidden");
+  document.body.classList.remove("theme-ready");
   if (prefill) {
     const acc = activeAccount();
     setWizardStep(0);
@@ -165,17 +166,17 @@ function updateEtaRing(st) {
   wrap.classList.toggle("hidden", !show);
   if (hint) {
     hint.textContent = show
-      ? "круг — доля оставшегося до R"
+      ? "круг заполняется по часовой"
       : st.eta != null && st.eta > ETA_RING_MAX_S
         ? "круг скрыт (>14 дн.)"
         : "";
   }
   if (!show) return;
 
-  // Remaining fraction of rebirth cost (1 = только начали, 0 = готово).
-  const left = Math.min(1, Math.max(0, st.rem / st.need));
+  // Done fraction grows clockwise from 12 o'clock.
+  const done = 1 - Math.min(1, Math.max(0, st.rem / st.need));
   prog.style.strokeDasharray = String(ETA_RING_C);
-  prog.style.strokeDashoffset = String(ETA_RING_C * (1 - left));
+  prog.style.strokeDashoffset = String(ETA_RING_C * (1 - done));
   text.textContent = formatDuration(st.eta);
 }
 
@@ -195,6 +196,10 @@ function renderDashboard({ syncInputs = false } = {}) {
   $("#stat-session-detail").textContent = "только пока вкладка открыта (можно свернуть)";
 
   updateEtaRing(st);
+  document.body.classList.toggle(
+    "theme-ready",
+    Boolean(st.ready && acc.setupComplete && !dashboardEl.classList.contains("hidden"))
+  );
 
   if (syncInputs) {
     const rebirthEl = $("#edit-rebirth");
