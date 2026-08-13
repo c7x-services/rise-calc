@@ -1,0 +1,2119 @@
+[
+    {
+        "name": "Шаурма \"У Вадика\"",
+        "coords": "-623 127 -754",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 15000,
+                "income": 3
+            },
+            {
+                "price": 20000,
+                "income": 6,
+                "total": 35000
+            },
+            {
+                "price": 35000,
+                "income": 10,
+                "total": 70000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Кофейня \"StarRubs\"",
+        "coords": "-717 127 -870",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 25000,
+                "income": 5
+            },
+            {
+                "price": 20000,
+                "income": 7,
+                "total": 45000
+            },
+            {
+                "price": 25000,
+                "income": 9,
+                "total": 70000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Та самая Пекарня!",
+        "coords": "-977 127 -971",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 25000,
+                "income": 5
+            },
+            {
+                "price": 20000,
+                "income": 7,
+                "total": 45000
+            },
+            {
+                "price": 25000,
+                "income": 9,
+                "total": 70000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Шаурмак",
+        "coords": "-618 127 -843",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 25000,
+                "income": 5
+            },
+            {
+                "price": 25000,
+                "income": 10,
+                "total": 50000
+            },
+            {
+                "price": 50000,
+                "income": 18,
+                "total": 100000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Магазин \"Вишня\"",
+        "coords": "-718 127 -843",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 40000,
+                "income": 8
+            },
+            {
+                "price": 30000,
+                "income": 11,
+                "total": 70000
+            },
+            {
+                "price": 40000,
+                "income": 14,
+                "total": 110000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Пиццерия \"Швеция\"",
+        "coords": "-658 138 -914",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 50000,
+                "income": 7
+            },
+            {
+                "price": 80000,
+                "income": 13,
+                "total": 130000
+            },
+            {
+                "price": 100000,
+                "income": 18,
+                "total": 230000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Экспресс доставка \"Pony\"",
+        "coords": "-652 128 -926",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 50000,
+                "income": 8
+            },
+            {
+                "price": 50000,
+                "income": 15,
+                "total": 100000
+            },
+            {
+                "price": 100000,
+                "income": 30,
+                "total": 200000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Средневековая аптека",
+        "coords": "-955 127 -975",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 50000,
+                "income": 7
+            },
+            {
+                "price": 80000,
+                "income": 13,
+                "total": 130000
+            },
+            {
+                "price": 100000,
+                "income": 18,
+                "total": 230000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Суши-бар \"Якитория\"",
+        "coords": "-942 129 -698",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 75000,
+                "income": 9
+            },
+            {
+                "price": 75000,
+                "income": 14,
+                "total": 150000
+            },
+            {
+                "price": 100000,
+                "income": 19,
+                "total": 250000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Загс",
+        "coords": "-736 127 -903",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 75000,
+                "income": 8
+            },
+            {
+                "price": 75000,
+                "income": 12,
+                "total": 150000
+            },
+            {
+                "price": 100000,
+                "income": 16,
+                "total": 250000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Полиция",
+        "coords": "-780 129 -825",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 80000,
+                "income": 7
+            },
+            {
+                "price": 100000,
+                "income": 13,
+                "total": 180000
+            },
+            {
+                "price": 180000,
+                "income": 20,
+                "total": 360000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Заправка \"Рисойл\"",
+        "coords": "-601 127 -916",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 80000,
+                "income": 8
+            },
+            {
+                "price": 100000,
+                "income": 16,
+                "total": 180000
+            },
+            {
+                "price": 180000,
+                "income": 25,
+                "total": 360000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Хоз. товары \"Людмила\"",
+        "coords": "-776 127 -877",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 80000,
+                "income": 10
+            },
+            {
+                "price": 120000,
+                "income": 26,
+                "total": 200000
+            },
+            {
+                "price": 200000,
+                "income": 40,
+                "total": 400000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Гостиница \"Космос\"",
+        "coords": "-681 127 -817",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 9
+            },
+            {
+                "price": 80000,
+                "income": 16,
+                "total": 180000
+            },
+            {
+                "price": 100000,
+                "income": 22,
+                "total": 280000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Заправка \"МайнНефть\"",
+        "coords": "-653 127 -756",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 10
+            },
+            {
+                "price": 120000,
+                "income": 20,
+                "total": 220000
+            },
+            {
+                "price": 200000,
+                "income": 35,
+                "total": 420000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Магазин \"Уютное местечко\"",
+        "coords": "-541 127 -818",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 18
+            },
+            {
+                "price": 150000,
+                "income": 45,
+                "total": 250000
+            },
+            {
+                "price": 250000,
+                "income": 85,
+                "total": 500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Гостиница \"Сладкие сны\"",
+        "coords": "-783 127 -857",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 200000,
+                "income": 24
+            },
+            {
+                "price": 200000,
+                "income": 45,
+                "total": 400000
+            },
+            {
+                "price": 400000,
+                "income": 92,
+                "total": 800000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Кинотеатр",
+        "coords": "-1002 129 -736",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 300000,
+                "income": 16
+            },
+            {
+                "price": 500000,
+                "income": 49,
+                "total": 800000
+            },
+            {
+                "price": 300000,
+                "income": 60,
+                "total": 1200000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Одежда \"Gussi\"",
+        "coords": "-570 127 -834",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 25
+            },
+            {
+                "price": 500000,
+                "income": 55,
+                "total": 900000
+            },
+            {
+                "price": 350000,
+                "income": 75,
+                "total": 1250000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Ирландский паб",
+        "coords": "-1007 127 -970",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 25
+            },
+            {
+                "price": 500000,
+                "income": 55,
+                "total": 900000
+            },
+            {
+                "price": 350000,
+                "income": 75,
+                "total": 1250000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд одежды \"Kislen'ko\"",
+        "coords": "-940 140 -706",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 25
+            },
+            {
+                "price": 500000,
+                "income": 55,
+                "total": 900000
+            },
+            {
+                "price": 350000,
+                "income": 75,
+                "total": 1250000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд \"Adidas\"",
+        "coords": "-649 128 -924",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 25
+            },
+            {
+                "price": 500000,
+                "income": 55,
+                "total": 900000
+            },
+            {
+                "price": 600000,
+                "income": 100,
+                "total": 1500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Гик-шоп \"У Серёги\"",
+        "coords": "-977 129 -647",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 25
+            },
+            {
+                "price": 500000,
+                "income": 55,
+                "total": 900000
+            },
+            {
+                "price": 600000,
+                "income": 100,
+                "total": 1500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Фастфуд \"MineDonalds\"",
+        "coords": "-876 127 -841",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 25
+            },
+            {
+                "price": 500000,
+                "income": 55,
+                "total": 900000
+            },
+            {
+                "price": 350000,
+                "income": 75,
+                "total": 1250000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Оружейный магазин",
+        "coords": "-760 127 -878",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 27
+            },
+            {
+                "price": 500000,
+                "income": 60,
+                "total": 900000
+            },
+            {
+                "price": 350000,
+                "income": 80,
+                "total": 1250000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Магазин Ковров Лины",
+        "coords": "-935 140 -721",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 67.5,
+                "total": 2370000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Магазин чая \"У Али\"",
+        "coords": "-940 140 -717",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 67.5,
+                "total": 2370000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Кузница",
+        "coords": "-1016 127 -1004",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 37
+            },
+            {
+                "price": 1000000,
+                "income": 100,
+                "total": 1500000
+            },
+            {
+                "price": 2000000,
+                "income": 300,
+                "total": 3500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Больница",
+        "coords": "-901 129 -718",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 37
+            },
+            {
+                "price": 1000000,
+                "income": 100,
+                "total": 1500000
+            },
+            {
+                "price": 2000000,
+                "income": 300,
+                "total": 3500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд \"FILA\"",
+        "coords": "-667 128 -926",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000,
+                "income": 65
+            },
+            {
+                "price": 1000000,
+                "income": 120,
+                "total": 2000000
+            },
+            {
+                "price": 1500000,
+                "income": 190,
+                "total": 3500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Казино \"Фортуна\"",
+        "coords": "-727 127 -773",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000,
+                "income": 65
+            },
+            {
+                "price": 1000000,
+                "income": 120,
+                "total": 2000000
+            },
+            {
+                "price": 1500000,
+                "income": 190,
+                "total": 3500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Ионотека",
+        "coords": "-628 129 -939",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000,
+                "income": 65
+            },
+            {
+                "price": 2000000,
+                "income": 200,
+                "total": 3000000
+            },
+            {
+                "price": 2500000,
+                "income": 340,
+                "total": 5500000
+            },
+            {
+                "price": 5000000,
+                "income": 660,
+                "total": 10500000
+            },
+            {
+                "price": 10000000,
+                "income": 1150,
+                "total": 20500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд \"Nike\"",
+        "coords": "-648 138 -925",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 2000000,
+                "income": 100
+            },
+            {
+                "price": 3000000,
+                "income": 280,
+                "total": 5000000
+            },
+            {
+                "price": 5000000,
+                "income": 600,
+                "total": 10000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Автосалон \"Ренессанс\"",
+        "coords": "-572 127 -740",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 2000000,
+                "income": 120
+            },
+            {
+                "price": 1500000,
+                "income": 190,
+                "total": 3500000
+            },
+            {
+                "price": 2000000,
+                "income": 280,
+                "total": 5500000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Торговый центр \"Вояж\"",
+        "coords": "-925 129 -700",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 2000000,
+                "income": 100
+            },
+            {
+                "price": 3000000,
+                "income": 280,
+                "total": 5000000
+            },
+            {
+                "price": 5000000,
+                "income": 600,
+                "total": 10000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд \"Tommy Hilfiger\"",
+        "coords": "-666 128 -925",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 2000000,
+                "income": 130
+            },
+            {
+                "price": 3000000,
+                "income": 340,
+                "total": 5000000
+            },
+            {
+                "price": 5000000,
+                "income": 700,
+                "total": 10000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Компания \"Twatter\"",
+        "coords": "-505 127 -828",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 2000000,
+                "income": 130
+            },
+            {
+                "price": 3000000,
+                "income": 340,
+                "total": 5000000
+            },
+            {
+                "price": 5000000,
+                "income": 700,
+                "total": 10000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Корпорация Apple",
+        "coords": "-992 129 -773",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 30000000,
+                "income": 2000
+            },
+            {
+                "price": 30000000,
+                "income": 3500,
+                "total": 60000000
+            },
+            {
+                "price": 50000000,
+                "income": 6000,
+                "total": 110000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Корпорация \"GApple\"",
+        "coords": "-715 127 -810",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 300000000,
+                "income": 20000
+            },
+            {
+                "price": 300000000,
+                "income": 35000,
+                "total": 600000000
+            },
+            {
+                "price": 500000000,
+                "income": 60000,
+                "total": 1100000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Компания \"Moogle\"",
+        "coords": "-706 127 -911",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 500000000,
+                "income": 35000
+            },
+            {
+                "price": 500000000,
+                "income": 60000,
+                "total": 1000000000
+            },
+            {
+                "price": 700000000,
+                "income": 85000,
+                "total": 1700000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд \"Луи Виттон\"",
+        "coords": "-647 128 -912",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000000,
+                "income": 75000
+            },
+            {
+                "price": 1000000000,
+                "income": 130000,
+                "total": 2000000000
+            },
+            {
+                "price": 2000000000,
+                "income": 225000,
+                "total": 4000000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Компания \"Cristalix\"",
+        "coords": "-618 127 -859",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000000,
+                "income": 75000
+            },
+            {
+                "price": 1000000000,
+                "income": 130000,
+                "total": 2000000000
+            },
+            {
+                "price": 2000000000,
+                "income": 225000,
+                "total": 4000000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Компания Disney",
+        "coords": "-978 129 -684",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000000,
+                "income": 75000
+            },
+            {
+                "price": 2000000000,
+                "income": 170000,
+                "total": 3000000000
+            },
+            {
+                "price": 3000000000,
+                "income": 350000,
+                "total": 6000000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Компания \"Syaomi\"",
+        "coords": "-535 127 -840",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 2000000000,
+                "income": 155000
+            },
+            {
+                "price": 3000000000,
+                "income": 350000,
+                "total": 5000000000
+            },
+            {
+                "price": 5000000000,
+                "income": 720000,
+                "total": 10000000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд \"Thom Browne\"",
+        "coords": "-940 129 -704",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 20000000000,
+                "income": 1500000
+            },
+            {
+                "price": 20000000000,
+                "income": 2800000,
+                "total": 40000000000
+            },
+            {
+                "price": 30000000000,
+                "income": 5000000,
+                "total": 70000000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бренд \"GUCCI\"",
+        "coords": "-668 128 -913",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 20000000000,
+                "income": 1500000
+            },
+            {
+                "price": 20000000000,
+                "income": 2800000,
+                "total": 40000000000
+            },
+            {
+                "price": 30000000000,
+                "income": 5000000,
+                "total": 70000000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Фабрика ИКЕА",
+        "coords": "-603 127 -792",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 20000000000,
+                "income": 1800000
+            },
+            {
+                "price": 30000000000,
+                "income": 2700000,
+                "total": 50000000000
+            },
+            {
+                "price": 45000000000,
+                "income": 4050000,
+                "total": 95000000000
+            }
+        ],
+        "requirement": 26
+    },
+    {
+        "name": "Картинг",
+        "coords": "-555 121 -753",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000000000,
+                "income": 75000000
+            },
+            {
+                "price": 1600000000000,
+                "income": 120000000,
+                "total": 2600000000000
+            },
+            {
+                "price": 2560000000000,
+                "income": 192000000,
+                "total": 5160000000000
+            }
+        ],
+        "requirement": 34
+    },
+    {
+        "name": "Церковь",
+        "coords": "-910 127 -1026",
+        "location": "Бомж-Сити",
+        "levels": [
+            {
+                "price": 1000000000000,
+                "income": 75000000
+            },
+            {
+                "price": 1500000000000,
+                "income": 190000000,
+                "total": 2500000000000
+            },
+            {
+                "price": 2000000000000,
+                "income": 330000000,
+                "total": 4500000000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Лесной лагерь",
+        "coords": "23 111 24",
+        "location": "Лес",
+        "levels": [
+            {
+                "price": 25000,
+                "income": 5
+            },
+            {
+                "price": 20000,
+                "income": 7,
+                "total": 45000
+            },
+            {
+                "price": 25000,
+                "income": 9,
+                "total": 70000
+            }
+        ],
+        "requirement": 1
+    },
+    {
+        "name": "Загон для животных",
+        "coords": "-18 111 -18",
+        "location": "Лес",
+        "levels": [
+            {
+                "price": 75000,
+                "income": 9
+            },
+            {
+                "price": 75000,
+                "income": 14,
+                "total": 150000
+            },
+            {
+                "price": 100000,
+                "income": 19,
+                "total": 250000
+            }
+        ],
+        "requirement": 1
+    },
+    {
+        "name": "Лесная ферма",
+        "coords": "8 112 47",
+        "location": "Лес",
+        "levels": [
+            {
+                "price": 400000,
+                "income": 25
+            },
+            {
+                "price": 500000,
+                "income": 55,
+                "total": 900000
+            },
+            {
+                "price": 350000,
+                "income": 75,
+                "total": 1250000
+            }
+        ],
+        "requirement": 1
+    },
+    {
+        "name": "Лесопилка",
+        "coords": "11 111 -49",
+        "location": "Лес",
+        "levels": [
+            {
+                "price": 25000000,
+                "income": 1500
+            },
+            {
+                "price": 75000000,
+                "income": 4000,
+                "total": 100000000
+            },
+            {
+                "price": 100000000,
+                "income": 7300,
+                "total": 200000000
+            }
+        ],
+        "requirement": 1
+    },
+    {
+        "name": "Порт \"Лучший\"",
+        "coords": "-507 91 -1315",
+        "location": "Порт",
+        "levels": [
+            {
+                "price": 25000000,
+                "income": 1500
+            },
+            {
+                "price": 75000000,
+                "income": 4000,
+                "total": 100000000
+            },
+            {
+                "price": 100000000,
+                "income": 7300,
+                "total": 200000000
+            }
+        ],
+        "requirement": 0
+    },
+    {
+        "name": "Бар \"Поезд\"",
+        "coords": "-58 117 -47",
+        "location": "Кипр",
+        "levels": [
+            {
+                "price": 25000,
+                "income": 5
+            },
+            {
+                "price": 50000,
+                "income": 10,
+                "total": 75000
+            },
+            {
+                "price": 75000,
+                "income": 17,
+                "total": 150000
+            }
+        ],
+        "requirement": 3
+    },
+    {
+        "name": "Кафе \"Европа\"",
+        "coords": "-2 117 -82",
+        "location": "Кипр",
+        "levels": [
+            {
+                "price": 50000,
+                "income": 7
+            },
+            {
+                "price": 100000,
+                "income": 14,
+                "total": 150000
+            },
+            {
+                "price": 150000,
+                "income": 26,
+                "total": 300000
+            }
+        ],
+        "requirement": 3
+    },
+    {
+        "name": "Колесо обозрения",
+        "coords": "45 117 -36",
+        "location": "Кипр",
+        "levels": [
+            {
+                "price": 50000,
+                "income": 10
+            },
+            {
+                "price": 100000,
+                "income": 18,
+                "total": 150000
+            },
+            {
+                "price": 150000,
+                "income": 36,
+                "total": 300000
+            }
+        ],
+        "requirement": 3
+    },
+    {
+        "name": "Заправка \"AtOil\"",
+        "coords": "35 117 -81",
+        "location": "Кипр",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 10
+            },
+            {
+                "price": 120000,
+                "income": 25,
+                "total": 220000
+            },
+            {
+                "price": 200000,
+                "income": 40,
+                "total": 420000
+            }
+        ],
+        "requirement": 3
+    },
+    {
+        "name": "Отель \"Grand\"",
+        "coords": "-25 117 -109",
+        "location": "Кипр",
+        "levels": [
+            {
+                "price": 3000000,
+                "income": 170
+            },
+            {
+                "price": 5000000,
+                "income": 450,
+                "total": 8000000
+            },
+            {
+                "price": 7000000,
+                "income": 840,
+                "total": 15000000
+            }
+        ],
+        "requirement": 3
+    },
+    {
+        "name": "Порт \"Кириния\"",
+        "coords": "21 122 -205",
+        "location": "Кипр",
+        "levels": [
+            {
+                "price": 50000000,
+                "income": 1800
+            },
+            {
+                "price": 150000000,
+                "income": 6000,
+                "total": 200000000
+            },
+            {
+                "price": 200000000,
+                "income": 11000,
+                "total": 400000000
+            }
+        ],
+        "requirement": 3
+    },
+    {
+        "name": "Курортный остров \"Кипр\"",
+        "coords": "14 122 -186",
+        "location": "Кипр",
+        "levels": [
+            {
+                "price": 20000000000,
+                "income": 1700000
+            },
+            {
+                "price": 15000000000,
+                "income": 2800000,
+                "total": 35000000000
+            },
+            {
+                "price": 25000000000,
+                "income": 5000000,
+                "total": 60000000000
+            }
+        ],
+        "requirement": 3
+    },
+    {
+        "name": "Кафе \"Вкусный холод\"",
+        "coords": "4 127 -68",
+        "location": "Горнолыжный курорт",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 12
+            },
+            {
+                "price": 100000,
+                "income": 22,
+                "total": 200000
+            },
+            {
+                "price": 200000,
+                "income": 38,
+                "total": 400000
+            }
+        ],
+        "requirement": 5
+    },
+    {
+        "name": "Прокат лыж \"FastRave\"",
+        "coords": "-163 127 -140",
+        "location": "Горнолыжный курорт",
+        "levels": [
+            {
+                "price": 1000000,
+                "income": 50
+            },
+            {
+                "price": 3000000,
+                "income": 180,
+                "total": 4000000
+            },
+            {
+                "price": 4000000,
+                "income": 350,
+                "total": 8000000
+            }
+        ],
+        "requirement": 5
+    },
+    {
+        "name": "Прокат лыж \"SnowRoads\"",
+        "coords": "-23 141 82",
+        "location": "Горнолыжный курорт",
+        "levels": [
+            {
+                "price": 1000000,
+                "income": 50
+            },
+            {
+                "price": 3000000,
+                "income": 220,
+                "total": 4000000
+            },
+            {
+                "price": 4000000,
+                "income": 450,
+                "total": 8000000
+            }
+        ],
+        "requirement": 5
+    },
+    {
+        "name": "Прокат снегоходов",
+        "coords": "24 127 -115",
+        "location": "Горнолыжный курорт",
+        "levels": [
+            {
+                "price": 3000000,
+                "income": 170
+            },
+            {
+                "price": 5000000,
+                "income": 450,
+                "total": 8000000
+            },
+            {
+                "price": 7000000,
+                "income": 840,
+                "total": 15000000
+            }
+        ],
+        "requirement": 5
+    },
+    {
+        "name": "Лыжня \"Скоростная\"",
+        "coords": "-156 127 -148",
+        "location": "Горнолыжный курорт",
+        "levels": [
+            {
+                "price": 100000000,
+                "income": 3500
+            },
+            {
+                "price": 200000000,
+                "income": 8500,
+                "total": 300000000
+            },
+            {
+                "price": 300000000,
+                "income": 19000,
+                "total": 600000000
+            }
+        ],
+        "requirement": 5
+    },
+    {
+        "name": "Горнолыжный подъемник",
+        "coords": "-24 127 -28",
+        "location": "Горнолыжный курорт",
+        "levels": [
+            {
+                "price": 200000000,
+                "income": 6500
+            },
+            {
+                "price": 300000000,
+                "income": 16000,
+                "total": 500000000
+            },
+            {
+                "price": 500000000,
+                "income": 29000,
+                "total": 1000000000
+            }
+        ],
+        "requirement": 5
+    },
+    {
+        "name": "Горнолыжный курорт \"Игора\"",
+        "coords": "-19 127 -64",
+        "location": "Горнолыжный курорт",
+        "levels": [
+            {
+                "price": 15000000000,
+                "income": 1250000
+            },
+            {
+                "price": 20000000000,
+                "income": 2800000,
+                "total": 35000000000
+            },
+            {
+                "price": 30000000000,
+                "income": 5300000,
+                "total": 65000000000
+            }
+        ],
+        "requirement": 5
+    },
+    {
+        "name": "Кафе \"Криптаны\"",
+        "coords": "22 92 -123",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 25000,
+                "income": 5
+            },
+            {
+                "price": 75000,
+                "income": 15,
+                "total": 100000
+            },
+            {
+                "price": 225000,
+                "income": 45,
+                "total": 325000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Кафе \"КриптоГород\"",
+        "coords": "53 93 -69",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 25000,
+                "income": 5
+            },
+            {
+                "price": 75000,
+                "income": 15,
+                "total": 100000
+            },
+            {
+                "price": 225000,
+                "income": 45,
+                "total": 325000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Магазин \"Всё для пожарных\"",
+        "coords": "-370 91 -46",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 75000,
+                "income": 12
+            },
+            {
+                "price": 225000,
+                "income": 36,
+                "total": 300000
+            },
+            {
+                "price": 675000,
+                "income": 108,
+                "total": 975000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Поликлиника",
+        "coords": "72 93 -172",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 15
+            },
+            {
+                "price": 300000,
+                "income": 45,
+                "total": 400000
+            },
+            {
+                "price": 900000,
+                "income": 135,
+                "total": 1300000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Магазин \"Всё для строителей\"",
+        "coords": "-28 92 -22",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 20
+            },
+            {
+                "price": 150000,
+                "income": 30,
+                "total": 250000
+            },
+            {
+                "price": 225000,
+                "income": 45,
+                "total": 475000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Пожарная станция",
+        "coords": "-371 91 -17",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 15
+            },
+            {
+                "price": 300000,
+                "income": 45,
+                "total": 400000
+            },
+            {
+                "price": 900000,
+                "income": 135,
+                "total": 1300000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Заправка \"DOGS\"",
+        "coords": "-299 91 -22",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 10
+            },
+            {
+                "price": 150000,
+                "income": 15,
+                "total": 250000
+            },
+            {
+                "price": 225000,
+                "income": 22.5,
+                "total": 475000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Заправка \"CATS\"",
+        "coords": "215 91 -89",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 100000,
+                "income": 10
+            },
+            {
+                "price": 200000,
+                "income": 20,
+                "total": 300000
+            },
+            {
+                "price": 400000,
+                "income": 40,
+                "total": 700000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Вкусно и Точка",
+        "coords": "-301 91 -173",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 150000,
+                "income": 15
+            },
+            {
+                "price": 225000,
+                "income": 22.5,
+                "total": 375000
+            },
+            {
+                "price": 337500,
+                "income": 33.75,
+                "total": 712500
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Зоопарк",
+        "coords": "-171 91 -172",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 150000,
+                "income": 15
+            },
+            {
+                "price": 225000,
+                "income": 22.5,
+                "total": 375000
+            },
+            {
+                "price": 337500,
+                "income": 33.75,
+                "total": 712500
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Аптека",
+        "coords": "23 91 -35",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 150000,
+                "income": 15
+            },
+            {
+                "price": 225000,
+                "income": 22.5,
+                "total": 375000
+            },
+            {
+                "price": 337500,
+                "income": 33.75,
+                "total": 712500
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Круглосуточный Магазин",
+        "coords": "261 91 -83",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 150000,
+                "income": 15
+            },
+            {
+                "price": 225000,
+                "income": 22.5,
+                "total": 375000
+            },
+            {
+                "price": 337500,
+                "income": 33.75,
+                "total": 712500
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Магазин",
+        "coords": "71 91 3",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 150000,
+                "income": 15
+            },
+            {
+                "price": 225000,
+                "income": 22.5,
+                "total": 375000
+            },
+            {
+                "price": 337500,
+                "income": 33.75,
+                "total": 712500
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Магазин",
+        "coords": "76 94 -42",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 150000,
+                "income": 15
+            },
+            {
+                "price": 225000,
+                "income": 22.5,
+                "total": 375000
+            },
+            {
+                "price": 337500,
+                "income": 33.75,
+                "total": 712500
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Магазин Растений",
+        "coords": "118 92 -11",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 67.5,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Аттракцион \"Steel Dragon\"",
+        "coords": "-98 99 -3",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 90,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Тир",
+        "coords": "-118 95 18",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 90,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Колесо Обозрения",
+        "coords": "-116 95 27",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 90,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Аттракцион \"Street Racer\"",
+        "coords": "-93 95 25",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 90,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Аттракцион \"Лодка\"",
+        "coords": "-135 95 -51",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 90,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Аттракцион \"Утки\"",
+        "coords": "-155 96 -50",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 90,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Аттракцион \"Американские Горки\"",
+        "coords": "-159 95 -76",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 500000,
+                "income": 30
+            },
+            {
+                "price": 750000,
+                "income": 45,
+                "total": 1250000
+            },
+            {
+                "price": 1120000,
+                "income": 90,
+                "total": 2370000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Автошкола \"Уезжаю на Гаити\"",
+        "coords": "-337 91 -144",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 1000000,
+                "income": 70
+            },
+            {
+                "price": 1500000,
+                "income": 105,
+                "total": 2500000
+            },
+            {
+                "price": 2250000,
+                "income": 157.5,
+                "total": 4750000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Офис Cristalix Build Team",
+        "coords": "45 91 -126",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 2000000,
+                "income": 300
+            },
+            {
+                "price": 3000000,
+                "income": 450,
+                "total": 5000000
+            },
+            {
+                "price": 4500000,
+                "income": 675,
+                "total": 9500000
+            }
+        ],
+        "requirement": 7
+    },
+    {
+        "name": "Магазин \"Пятёрка\"",
+        "coords": "117 91 -36",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 555560000,
+                "income": 55550
+            }
+        ],
+        "requirement": 26
+    },
+    {
+        "name": "Магазин Интересных Журналов",
+        "coords": "76 93 -62",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 20000000000,
+                "income": 1800000
+            },
+            {
+                "price": 30000000000,
+                "income": 2700000,
+                "total": 50000000000
+            },
+            {
+                "price": 45000000000,
+                "income": 4050000,
+                "total": 95000000000
+            }
+        ],
+        "requirement": 26
+    },
+    {
+        "name": "Телефоны \"Sonya XP\"",
+        "coords": "-254 91 35",
+        "location": "Криптогород",
+        "levels": [
+            {
+                "price": 25000000000,
+                "income": 2000000
+            },
+            {
+                "price": 37500000000,
+                "income": 3000000,
+                "total": 62500000000
+            },
+            {
+                "price": 56250000000,
+                "income": 4500000,
+                "total": 118750000000
+            }
+        ],
+        "requirement": 26
+    },
+    {
+        "name": "Компания \"Восток\"",
+        "coords": "69 91 3",
+        "location": "Космодром",
+        "levels": [
+            {
+                "price": 2000000000,
+                "income": 130000
+            },
+            {
+                "price": 3000000000,
+                "income": 250000,
+                "total": 5000000000
+            },
+            {
+                "price": 5000000000,
+                "income": 560000,
+                "total": 10000000000
+            },
+            {
+                "price": 5000000000,
+                "income": 400000,
+                "total": 15000000000
+            }
+        ],
+        "requirement": 9
+    }
+]
