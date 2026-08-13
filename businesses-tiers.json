@@ -1,0 +1,249 @@
+[
+    {
+        "name": "Бомжи",
+        "coords": "-662 123 -926",
+        "location": "Бомж-сити",
+        "levelCount": 15,
+        "price1": 200,
+        "priceStep": {
+            "type": "fixed",
+            "value": 5
+        },
+        "priceTotal": 3525,
+        "income1": 0.05,
+        "incomeStep": null,
+        "incomeMax": 0.75,
+        "requirement": 0
+    },
+    {
+        "name": "Флористы",
+        "coords": "-632 127 -743",
+        "location": "Бомж-сити",
+        "levelCount": 15,
+        "price1": 1000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 50
+        },
+        "priceTotal": 20250,
+        "income1": 0.2,
+        "incomeStep": null,
+        "incomeMax": 3,
+        "requirement": 0
+    },
+    {
+        "name": "Майнеры",
+        "coords": "-529 121 -802",
+        "location": "Бомж-сити",
+        "levelCount": 10,
+        "price1": 10000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 500
+        },
+        "priceTotal": 122500,
+        "income1": 2,
+        "incomeStep": null,
+        "incomeMax": 20,
+        "requirement": 0
+    },
+    {
+        "name": "Те самые тыквы",
+        "coords": "-947 127 -979",
+        "location": "Средневековый Район",
+        "levelCount": 15,
+        "price1": 10000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 200
+        },
+        "priceTotal": 171000,
+        "income1": 1.8,
+        "incomeStep": null,
+        "incomeMax": 27,
+        "requirement": 0
+    },
+    {
+        "name": "Средневековые арбузы",
+        "coords": "-936 127 -1003",
+        "location": "Средневековый Район",
+        "levelCount": 15,
+        "price1": 10000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 200
+        },
+        "priceTotal": 171000,
+        "income1": 1.75,
+        "incomeStep": null,
+        "incomeMax": 26.25,
+        "requirement": 0
+    },
+    {
+        "name": "Ферма \"Арбузяшки\"",
+        "coords": "-670 129 -1176",
+        "location": "Ферма",
+        "levelCount": 25,
+        "price1": 5000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 100
+        },
+        "priceTotal": 155000,
+        "income1": 1,
+        "incomeStep": null,
+        "incomeMax": 25,
+        "requirement": 0
+    },
+    {
+        "name": "Ферма \"Бабушкины Тыквы\"",
+        "coords": "-670 129 -1166",
+        "location": "Ферма",
+        "levelCount": 25,
+        "price1": 5000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 100
+        },
+        "priceTotal": 155000,
+        "income1": 1,
+        "incomeStep": null,
+        "incomeMax": 25,
+        "requirement": 0
+    },
+    {
+        "name": "Курятник",
+        "coords": "-688 129 -1194",
+        "location": "Ферма",
+        "levelCount": 10,
+        "price1": 10000,
+        "priceStep": {
+            "type": "multiplier",
+            "factor": 1.5
+        },
+        "priceTotal": 1133300.781,
+        "income1": 2,
+        "incomeStep": {
+            "type": "multiplier",
+            "factor": 1.5
+        },
+        "incomeMax": 76.8867,
+        "requirement": 0,
+        "levels": [
+            {
+                "level": 1,
+                "price": 10000,
+                "income": 2
+            },
+            {
+                "level": 2,
+                "price": 15000,
+                "income": 3
+            },
+            {
+                "level": 3,
+                "price": 22500,
+                "income": 4.5
+            },
+            {
+                "level": 4,
+                "price": 33750,
+                "income": 6.75
+            },
+            {
+                "level": 5,
+                "price": 50625,
+                "income": 10.125
+            },
+            {
+                "level": 6,
+                "price": 75937.5,
+                "income": 15.1875
+            },
+            {
+                "level": 7,
+                "price": 113906.25,
+                "income": 22.7812
+            },
+            {
+                "level": 8,
+                "price": 170859.375,
+                "income": 34.1719
+            },
+            {
+                "level": 9,
+                "price": 256289.0625,
+                "income": 51.2578
+            },
+            {
+                "level": 10,
+                "price": 384433.5938,
+                "income": 76.8867
+            }
+        ]
+    },
+    {
+        "name": "Лесные рыбаки",
+        "coords": "70 112 -25",
+        "location": "Лес",
+        "levelCount": 20,
+        "price1": 10000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 200
+        },
+        "priceTotal": 238000,
+        "income1": 2.2,
+        "incomeStep": null,
+        "incomeMax": 44,
+        "requirement": 1
+    },
+    {
+        "name": "Семья рыболовов",
+        "coords": "113 117 -137",
+        "location": "Кипр",
+        "levelCount": 15,
+        "price1": 1000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 100
+        },
+        "priceTotal": 25500,
+        "income1": 0.2,
+        "incomeStep": null,
+        "incomeMax": 3,
+        "requirement": 3
+    },
+    {
+        "name": "Адские рыболовы",
+        "coords": "126 117 -116",
+        "location": "Кипр",
+        "levelCount": 15,
+        "price1": 2500,
+        "priceStep": {
+            "type": "fixed",
+            "value": 100
+        },
+        "priceTotal": 48000,
+        "income1": 0.3,
+        "incomeStep": null,
+        "incomeMax": 4.5,
+        "requirement": 3
+    },
+    {
+        "name": "Проф. рыболовы",
+        "coords": "-156 117 -40",
+        "location": "Кипр",
+        "levelCount": 15,
+        "price1": 25000,
+        "priceStep": {
+            "type": "fixed",
+            "value": 1000
+        },
+        "priceTotal": 480000,
+        "income1": 3,
+        "incomeStep": null,
+        "incomeMax": 45,
+        "requirement": 3
+    }
+]
