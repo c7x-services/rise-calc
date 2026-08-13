@@ -215,6 +215,17 @@ function renderDashboard({ syncInputs = false } = {}) {
     st.rem == null ? "макс" : st.ready ? "ГОТОВО" : formatMoney(st.rem);
   $("#stat-eta").textContent =
     st.ready ? "ГОТОВО" : st.eta != null ? `≈ ${formatDuration(st.eta)}` : "нет заработка";
+
+  const etaContent = $("#eta-content");
+  const etaDone = $("#eta-done");
+  const etaTitle = $("#eta-card-title");
+  if (etaContent && etaDone) {
+    const showDone = Boolean(st.ready);
+    etaContent.classList.toggle("hidden", showDone);
+    etaDone.classList.toggle("hidden", !showDone);
+    if (etaTitle) etaTitle.textContent = showDone ? "Перерождение" : "ETA";
+  }
+
   $("#stat-earnings").textContent = acc.earningsRaw ? `+${acc.earningsRaw}/с` : "—";
   const multEl = $("#stat-mult");
   if (multEl) {
@@ -728,6 +739,39 @@ function resetBalanceToZero() {
   applyPatch({ balance: 0, balanceRaw: "0" });
 }
 
+function confirmDidRebirth() {
+  const acc = activeAccount();
+  const st = computeStatus(acc);
+  if (!st.ready) return;
+  if (acc.rebirth >= MAX_REBIRTH) {
+    showDashboardError("Уже максимальное перерождение");
+    return;
+  }
+  const next = acc.rebirth + 1;
+  if (
+    !confirm(
+      `Подтвердить перерождение R${acc.rebirth} → R${next}?\n` +
+        "Сбросятся баланс, заработок, бизнесы, сессия и множитель."
+    )
+  ) {
+    return;
+  }
+  sessionEarned = 0;
+  bizListDirty = true;
+  bizPlanSignature = "";
+  bizAddEarnings = false;
+  applyPatch({
+    rebirth: next,
+    balance: 0,
+    balanceRaw: "0",
+    earningsPerSec: 0,
+    earningsRaw: "",
+    earningsMultiplier: null,
+    businessLevels: {},
+    lastTickAt: Date.now(),
+  });
+}
+
 function adjustBalanceBySeconds(sign) {
   const acc = activeAccount();
   const n = Math.floor(Number($("#edit-balance-sec").value) || 0);
@@ -909,6 +953,7 @@ function init() {
   on("#btn-calc-mult", "click", calcEarningsMultiplier);
   on("#btn-set-balance", "click", setBalanceFromDashboard);
   on("#btn-reset-balance", "click", resetBalanceToZero);
+  on("#btn-did-rebirth", "click", confirmDidRebirth);
   on("#btn-add-sec", "click", () => adjustBalanceBySeconds(1));
   on("#btn-sub-sec", "click", () => adjustBalanceBySeconds(-1));
   on("#edit-balance-sec", "input", updateBalanceSecHint);

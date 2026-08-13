@@ -111,9 +111,9 @@
             <p class="stat__value" id="stat-remaining">—</p>
           </article>
 
-          <article class="card stat stat--wide">
-            <h2>ETA</h2>
-            <div class="eta-row">
+          <article class="card stat stat--wide" id="eta-card">
+            <h2 id="eta-card-title">ETA</h2>
+            <div class="eta-row" id="eta-content">
               <div class="eta-ring-wrap hidden" id="eta-ring-wrap">
                 <svg class="eta-ring" viewBox="0 0 120 120" aria-hidden="true">
                   <circle class="eta-ring__track" cx="60" cy="60" r="52" />
@@ -127,6 +127,12 @@
                 <p class="stat__value" id="stat-eta">—</p>
                 <p class="muted" id="stat-eta-hint"></p>
               </div>
+            </div>
+            <div class="eta-done hidden" id="eta-done">
+              <button type="button" class="btn btn--rebirth" id="btn-did-rebirth">
+                Я сделал перерождение!
+              </button>
+              <p class="muted" id="eta-done-hint">сбросит баланс, заработок, бизнесы, сессию и множитель · R+1</p>
             </div>
           </article>
 

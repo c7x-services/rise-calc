@@ -168,12 +168,43 @@ code {
   grid-column: span 2;
 }
 
-.eta-row {
+.eta-done {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 0.35rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+  margin-top: 0.5rem;
+}
+
+.btn--rebirth {
+  width: 100%;
+  padding: 0.95rem 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--border));
+  border-radius: 10px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 55%, #fff 8%),
+    color-mix(in srgb, var(--accent-dim) 80%, #000 12%)
+  );
+  color: #0b1a12;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent),
+    0 10px 24px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.btn--rebirth:hover {
+  filter: brightness(1.06);
+}
+
+.btn--rebirth:active {
+  transform: translateY(1px);
+}
+
+body.theme-ready .btn--rebirth {
+  color: #062214;
 }
 
 .eta-copy {
