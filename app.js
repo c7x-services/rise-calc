@@ -40,6 +40,10 @@ let tickTimer = null;
 let bizCatalog = null;
 let bizShowMaxed = false;
 let bizListDirty = true;
+/** @type {string} */
+let bizPlanSignature = "";
+let bizPlanAt = 0;
+const BIZ_PLAN_MIN_MS = 8000;
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -225,7 +229,11 @@ function renderDashboard({ syncInputs = false } = {}) {
   }
 
   updateBalanceSecHint();
-  renderBusinessHints({ rebuildList: syncInputs || bizListDirty });
+  // Stats tick often; business plan is throttled separately.
+  renderBusinessHints({
+    rebuildList: syncInputs || bizListDirty,
+    forcePlan: syncInputs || bizListDirty,
+  });
 }
 
 function escapeHtml(s) {
@@ -244,21 +252,30 @@ function setBizOwned(name, level) {
   else levels[name] = n;
   updateAccount(state, { businessLevels: levels });
   bizListDirty = true;
-  renderBusinessHints({ rebuildList: true });
+  bizPlanSignature = "";
+  renderBusinessHints({ rebuildList: true, forcePlan: true });
 }
 
-function renderBusinessHints({ rebuildList = false } = {}) {
+function bizControlsHtml(biz, have) {
+  return `<div class="biz-row__lv">
+    <button type="button" class="btn btn--ghost btn--sm biz-minus" data-name="${escapeHtml(biz.name)}" title="−1">−</button>
+    <span class="biz-lv">${have}/${biz.maxLevel}</span>
+    <button type="button" class="btn btn--ghost btn--sm biz-plus" data-name="${escapeHtml(biz.name)}" data-max="${biz.maxLevel}" title="+1">+</button>
+    <button type="button" class="btn btn--primary btn--sm biz-bought" data-name="${escapeHtml(biz.name)}" data-max="${biz.maxLevel}" title="Отметить все уровни">Скуплен</button>
+  </div>`;
+}
+
+function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
   const status = $("#biz-status");
   const planEl = $("#biz-plan");
-  const listEl = $("#biz-list");
   const toolbar = $("#biz-toolbar");
-  if (!status || !planEl || !listEl) return;
+  const ageEl = $("#biz-plan-age");
+  if (!status || !planEl) return;
 
   if (!bizCatalog) {
     status.textContent = "Загрузка каталога…";
     status.classList.remove("hidden");
     planEl.classList.add("hidden");
-    listEl.classList.add("hidden");
     toolbar?.classList.add("hidden");
     return;
   }
@@ -268,7 +285,6 @@ function renderBusinessHints({ rebuildList = false } = {}) {
     status.textContent = "Сначала заверши мастер ввода (перерождение → баланс → заработок).";
     status.classList.remove("hidden");
     planEl.classList.add("hidden");
-    listEl.classList.add("hidden");
     toolbar?.classList.add("hidden");
     return;
   }
@@ -278,87 +294,112 @@ function renderBusinessHints({ rebuildList = false } = {}) {
   planEl.classList.remove("hidden");
 
   const ownedLevels = acc.businessLevels || {};
+  const now = Date.now();
+  const sig = `${acc.id}|${acc.rebirth}|${Math.floor(acc.balance / 1000)}|${JSON.stringify(ownedLevels)}|${bizShowMaxed}`;
+  const due =
+    forcePlan ||
+    rebuildList ||
+    bizListDirty ||
+    sig !== bizPlanSignature ||
+    now - bizPlanAt >= BIZ_PLAN_MIN_MS;
+
+  if (ageEl) {
+    const ago = bizPlanAt ? Math.max(0, Math.floor((now - bizPlanAt) / 1000)) : 0;
+    ageEl.textContent = bizPlanAt ? `обновлено ${ago}с назад` : "";
+  }
+
+  if (!due) return;
+
   const plan = planPurchases(bizCatalog, {
     rebirth: acc.rebirth,
     balance: acc.balance,
     ownedLevels,
   });
+  const planByName = new Map(plan.grouped.map((g) => [g.biz.name, g]));
 
-  if (!plan.steps.length) {
-    planEl.innerHTML =
-      `<p class="muted">Нечего купить на текущий баланс (или всё выкуплено / закрыто по R).</p>`;
-  } else {
-    const rows = plan.grouped
-      .map((g) => {
-        const loc = matchLocation(g.biz.location);
-        const locName = loc?.name || g.biz.location || "—";
-        return `<li class="biz-plan__item">
+  bizPlanSignature = sig;
+  bizPlanAt = now;
+  bizListDirty = false;
+
+  planEl.classList.remove("biz-plan--flash");
+  void planEl.offsetWidth;
+  planEl.classList.add("biz-plan--flash");
+
+  const visible = listVisibleBusinesses(bizCatalog, {
+    rebirth: acc.rebirth,
+    ownedLevels,
+    showMaxed: bizShowMaxed,
+  });
+
+  visible.sort((a, b) => {
+    const pa = planByName.get(a.name);
+    const pb = planByName.get(b.name);
+    if (pa && !pb) return -1;
+    if (!pa && pb) return 1;
+    if (pa && pb) return pb.roiAvg - pa.roiAvg || pb.incomeDelta - pa.incomeDelta;
+    const oa = getOwned(ownedLevels, a);
+    const ob = getOwned(ownedLevels, b);
+    const ua = nextUpgrade(a, oa);
+    const ub = nextUpgrade(b, ob);
+    const ra = ua && ua.price > 0 ? ua.incomeDelta / ua.price : -1;
+    const rb = ub && ub.price > 0 ? ub.incomeDelta / ub.price : -1;
+    return rb - ra || a.name.localeCompare(b.name, "ru");
+  });
+
+  const rows = visible
+    .map((biz) => {
+      const have = getOwned(ownedLevels, biz);
+      const up = nextUpgrade(biz, have);
+      const loc = matchLocation(biz.location);
+      const locName = loc?.name || biz.location || "—";
+      const req = biz.requirement > 0 ? `R${biz.requirement}+` : "R0+";
+      const g = planByName.get(biz.name);
+      let meta;
+      if (g) {
+        meta = `
+          <span class="biz-tag">в плане</span>
+          <span>Lv ${g.from}→${g.to}</span>
+          <span>+${formatIncome(g.incomeDelta)}/с</span>
+          <span>${formatMoney(Math.round(g.price))}</span>
+          <span class="muted">${formatRoi(g.roiAvg)}</span>`;
+      } else if (have >= biz.maxLevel) {
+        meta = `<span class="muted">полностью куплен · ${have}/${biz.maxLevel}</span>`;
+      } else if (up) {
+        meta = `
+          <span class="muted">след. ${formatMoney(Math.round(up.price))} → +${formatIncome(up.incomeDelta)}/с</span>
+          <span class="muted">${formatRoi(up.incomeDelta / up.price)}</span>`;
+      } else {
+        meta = `<span class="muted">—</span>`;
+      }
+
+      return `<li class="biz-plan__item${g ? " biz-plan__item--plan" : ""}">
+        <div class="biz-plan__top">
           <div class="biz-plan__main">
-            <strong>${escapeHtml(g.biz.name)}</strong>
-            <span class="muted">Lv ${g.from}→${g.to} · ${escapeHtml(locName)}</span>
-          </div>
-          <div class="biz-plan__meta">
-            <span>+${formatIncome(g.incomeDelta)}/с</span>
-            <span>${formatMoney(Math.round(g.price))}</span>
-            <span class="muted">${formatRoi(g.roiAvg)}</span>
-          </div>
-          ${g.biz.coords ? `<code class="biz-coords">${escapeHtml(g.biz.coords)}</code>` : ""}
-        </li>`;
-      })
-      .join("");
-    planEl.innerHTML = `
-      <div class="biz-plan__sum">
-        План: <strong>${plan.steps.length}</strong> апгрейдов ·
-        −${formatMoney(Math.round(plan.spent))} ·
-        +${formatIncome(plan.incomeGain)}/с
-      </div>
-      <ol class="biz-plan__list">${rows}</ol>`;
-  }
-
-  if (rebuildList || bizListDirty) {
-    const visible = listVisibleBusinesses(bizCatalog, {
-      rebirth: acc.rebirth,
-      ownedLevels,
-      showMaxed: bizShowMaxed,
-    });
-    visible.sort((a, b) => {
-      const oa = getOwned(ownedLevels, a);
-      const ob = getOwned(ownedLevels, b);
-      const ua = nextUpgrade(a, oa);
-      const ub = nextUpgrade(b, ob);
-      const ra = ua && ua.price > 0 ? ua.incomeDelta / ua.price : -1;
-      const rb = ub && ub.price > 0 ? ub.incomeDelta / ub.price : -1;
-      return rb - ra || a.name.localeCompare(b.name, "ru");
-    });
-
-    listEl.classList.remove("hidden");
-    listEl.innerHTML =
-      visible
-        .map((biz) => {
-          const have = getOwned(ownedLevels, biz);
-          const up = nextUpgrade(biz, have);
-          const loc = matchLocation(biz.location);
-          const locName = loc?.name || biz.location || "—";
-          const nextMeta = up
-            ? `след. ${formatMoney(Math.round(up.price))} → +${formatIncome(up.incomeDelta)}/с`
-            : "макс";
-          return `<div class="biz-row" data-biz="${escapeHtml(biz.name)}">
-          <div class="biz-row__info">
             <strong>${escapeHtml(biz.name)}</strong>
-            <span class="muted">${escapeHtml(locName)}${biz.requirement ? ` · R${biz.requirement}+` : ""}</span>
-            <span class="muted">${nextMeta}</span>
-            ${biz.coords ? `<code class="biz-coords">${escapeHtml(biz.coords)}</code>` : ""}
+            <span class="biz-pill">${req}</span>
+            <span class="muted">${escapeHtml(locName)}</span>
           </div>
-          <div class="biz-row__lv">
-            <button type="button" class="btn btn--ghost btn--sm biz-minus" data-name="${escapeHtml(biz.name)}">−</button>
-            <span class="biz-lv">${have}/${biz.maxLevel}</span>
-            <button type="button" class="btn btn--ghost btn--sm biz-plus" data-name="${escapeHtml(biz.name)}" data-max="${biz.maxLevel}">+</button>
-          </div>
-        </div>`;
-        })
-        .join("") || `<p class="muted">Нет доступных бизнесов для R${acc.rebirth}.</p>`;
-    bizListDirty = false;
-  }
+          ${bizControlsHtml(biz, have)}
+        </div>
+        <div class="biz-plan__meta">${meta}</div>
+        ${biz.coords ? `<code class="biz-coords">${escapeHtml(biz.coords)}</code>` : ""}
+      </li>`;
+    })
+    .join("");
+
+  const sum = plan.steps.length
+    ? `План: <strong>${plan.steps.length}</strong> апгрейдов ·
+        −${formatMoney(Math.round(plan.spent))} ·
+        +${formatIncome(plan.incomeGain)}/с`
+    : "План пуст — на баланс сейчас нечего выгодно купить";
+
+  planEl.innerHTML = `
+    <div class="biz-plan__sum">${sum}</div>
+    <ol class="biz-plan__list">${
+      rows || `<p class="muted">Нет доступных бизнесов для R${acc.rebirth}.</p>`
+    }</ol>`;
+
+  if (ageEl) ageEl.textContent = "обновлено только что";
 }
 
 function updateBalanceSecHint() {
@@ -603,10 +644,10 @@ function init() {
   on("#biz-show-maxed", "change", (e) => {
     bizShowMaxed = Boolean(e.target.checked);
     bizListDirty = true;
-    renderBusinessHints({ rebuildList: true });
+    renderBusinessHints({ rebuildList: true, forcePlan: true });
   });
 
-  $("#biz-list")?.addEventListener("click", (e) => {
+  $("#hints-panel")?.addEventListener("click", (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
     const name = t.dataset.name;
@@ -618,6 +659,9 @@ function init() {
     } else if (t.classList.contains("biz-plus")) {
       const max = Number(t.dataset.max || 99);
       setBizOwned(name, Math.min(max, have + 1));
+    } else if (t.classList.contains("biz-bought")) {
+      const max = Number(t.dataset.max || 99);
+      setBizOwned(name, max);
     }
   });
 
