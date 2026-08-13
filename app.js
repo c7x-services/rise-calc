@@ -632,7 +632,9 @@ function ensureBizPlanScaffold(planEl) {
     <div class="biz-plan__sum"></div>
     <div class="biz-plan__list-wrap">
       <ol class="biz-plan__list"></ol>
-      <div class="biz-gold-sheen" hidden aria-hidden="true"></div>
+      <div class="biz-gold-sheen" hidden aria-hidden="true">
+        <div class="biz-gold-sheen__beam"></div>
+      </div>
     </div>`;
   planEl.querySelector(".biz-plan__sum").innerHTML = prevSum;
   const list = planEl.querySelector(".biz-plan__list");
@@ -644,6 +646,9 @@ function syncGoldSheen(planEl) {
   const sheen = planEl.querySelector(".biz-gold-sheen");
   const best = planEl.querySelector(".biz-plan__item--best");
   if (!wrap || !sheen) return;
+  if (!sheen.querySelector(".biz-gold-sheen__beam")) {
+    sheen.innerHTML = `<div class="biz-gold-sheen__beam"></div>`;
+  }
   if (!best) {
     sheen.hidden = true;
     return;
@@ -651,9 +656,10 @@ function syncGoldSheen(planEl) {
   const wrapRect = wrap.getBoundingClientRect();
   const bestRect = best.getBoundingClientRect();
   sheen.hidden = false;
+  // Only geometry on the shell — never touch the beam (keeps shimmer loop intact).
   sheen.style.width = `${Math.max(0, bestRect.width)}px`;
   sheen.style.height = `${Math.max(0, bestRect.height)}px`;
-  sheen.style.transform = `translate(${bestRect.left - wrapRect.left}px, ${bestRect.top - wrapRect.top}px)`;
+  sheen.style.transform = `translate3d(${bestRect.left - wrapRect.left}px, ${bestRect.top - wrapRect.top}px, 0)`;
 }
 
 let sheenFollowRaf = 0;

@@ -491,7 +491,7 @@ code {
     inset 0 1px 0 color-mix(in srgb, #fff 40%, transparent);
 }
 
-/* Permanent overlay — animation never tied to list item DOM */
+/* Permanent overlay shell — JS only moves this; beam animates on its own */
 .biz-gold-sheen {
   position: absolute;
   left: 0;
@@ -499,20 +499,25 @@ code {
   border-radius: 8px;
   pointer-events: none;
   z-index: 5;
-  background:
-    linear-gradient(
-      105deg,
-      transparent 0%,
-      transparent 40%,
-      rgba(255, 248, 200, 0.55) 49%,
-      rgba(255, 255, 255, 0.35) 51%,
-      transparent 60%,
-      transparent 100%
-    );
-  background-size: 240% 100%;
-  animation: gold-shimmer 3.2s linear infinite;
+  overflow: hidden;
+}
+
+.biz-gold-sheen__beam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 248, 200, 0.15) 25%,
+    rgba(255, 248, 200, 0.65) 50%,
+    rgba(255, 255, 255, 0.4) 60%,
+    transparent 100%
+  );
   mix-blend-mode: soft-light;
-  will-change: transform;
+  animation: gold-shimmer 2.8s linear infinite;
 }
 
 .biz-gold-sheen[hidden] {
@@ -521,18 +526,21 @@ code {
 
 @keyframes gold-shimmer {
   0% {
-    background-position: 140% 0;
+    transform: translateX(-130%);
+  }
+  55% {
+    transform: translateX(250%);
   }
   100% {
-    background-position: -140% 0;
+    transform: translateX(250%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .biz-gold-sheen {
+  .biz-gold-sheen__beam {
     animation: none;
+    transform: translateX(40%);
     opacity: 0.35;
-    background-position: 45% 0;
   }
 }
 
