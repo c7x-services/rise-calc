@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bomj Rebirth — веб-трекер</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header__brand">
+        <h1>Bomj Rebirth</h1>
+        <p class="muted">Заработок идёт, пока вкладка открыта</p>
+      </div>
+      <div class="header__accounts">
+        <label class="sr-only" for="account-select">Аккаунт</label>
+        <select id="account-select" class="select"></select>
+        <button type="button" id="btn-add-account" class="btn btn--ghost" title="Новый аккаунт">+</button>
+        <button type="button" id="btn-del-account" class="btn btn--ghost btn--danger" title="Удалить аккаунт">×</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Wizard: rebirth → balance → earnings → continue -->
+      <section id="wizard" class="card wizard hidden">
+        <div class="wizard__steps" id="wizard-steps">
+          <span class="step step--active" data-step="0">1. Перерождение</span>
+          <span class="step" data-step="1">2. Баланс</span>
+          <span class="step" data-step="2">3. Заработок</span>
+        </div>
+
+        <div class="wizard__panel" id="panel-rebirth">
+          <label for="input-rebirth">Текущее перерождение (0–37)</label>
+          <input id="input-rebirth" class="input input--lg" type="number" min="0" max="37" step="1" inputmode="numeric" />
+          <p class="hint" id="hint-rebirth"></p>
+          <button type="button" class="btn btn--primary wizard-next">Далее</button>
+        </div>
+
+        <div class="wizard__panel hidden" id="panel-balance">
+          <label for="input-balance">Баланс из игры</label>
+          <input id="input-balance" class="input input--lg" type="text" placeholder="38.97K, 1.45M …" autocomplete="off" />
+          <p class="hint">Отсюда пойдёт отсчёт времени до «Продолжить»</p>
+          <div class="wizard__nav">
+            <button type="button" class="btn btn--ghost wizard-back">Назад</button>
+            <button type="button" class="btn btn--primary wizard-next">Далее</button>
+          </div>
+        </div>
+
+        <div class="wizard__panel hidden" id="panel-earnings">
+          <label for="input-earnings">Заработок / сек</label>
+          <input id="input-earnings" class="input input--lg" type="text" placeholder="343.55, 100 …" autocomplete="off" />
+          <p class="hint" id="hint-earnings-elapsed"></p>
+          <div class="wizard__nav">
+            <button type="button" class="btn btn--ghost wizard-back">Назад</button>
+            <button type="button" class="btn btn--primary" id="btn-continue">Продолжить</button>
+          </div>
+        </div>
+
+        <p class="error hidden" id="wizard-error"></p>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="dashboard" class="dashboard hidden">
+        <div class="grid">
+          <article class="card stat">
+            <h2>Цель</h2>
+            <p class="stat__value" id="stat-target">—</p>
+          </article>
+          <article class="card stat">
+            <h2>Баланс</h2>
+            <p class="stat__value" id="stat-balance">—</p>
+            <p class="muted" id="stat-balance-raw"></p>
+          </article>
+          <article class="card stat">
+            <h2>Осталось</h2>
+            <p class="stat__value" id="stat-remaining">—</p>
+          </article>
+          <article class="card stat">
+            <h2>ETA</h2>
+            <p class="stat__value" id="stat-eta">—</p>
+          </article>
+          <article class="card stat">
+            <h2>Заработок</h2>
+            <p class="stat__value" id="stat-earnings">—</p>
+            <p class="muted">+/с, пока вкладка открыта</p>
+          </article>
+          <article class="card stat">
+            <h2>Сессия</h2>
+            <p class="stat__value" id="stat-session">—</p>
+            <p class="muted" id="stat-session-detail"></p>
+          </article>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="btn-update" class="btn btn--primary">Обновить данные</button>
+          <button type="button" id="btn-reset-session" class="btn btn--ghost">Сбросить накопление сессии</button>
+        </div>
+      </section>
+
+      <!-- Business hints placeholder -->
+      <aside class="card hints" id="hints-panel">
+        <div class="hints__head">
+          <h2>Подсказки: бизнесы</h2>
+          <span class="badge">скоро</span>
+        </div>
+        <div class="hints__body" id="hints-body">
+          <p class="muted">
+            Здесь будут рекомендации по покупке бизнесов под текущее перерождение и баланс.
+          </p>
+          <ul class="hints__list hints__list--placeholder">
+            <li>— приоритет апгрейдов</li>
+            <li>— что купить до следующего R</li>
+            <li>— сравнение дохода / цены</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer muted">
+      Данные только в браузере (localStorage) · GitHub Pages / статика
+    </footer>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
