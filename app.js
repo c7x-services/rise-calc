@@ -376,13 +376,28 @@ function calcEarningsMultiplier() {
   applyPatch({ earningsMultiplier: mult });
 }
 
-function bizControlsHtml(biz, have) {
+function bizControlsHtml(biz, have, planBuys = 0) {
+  const n = Math.max(0, Math.floor(Number(planBuys) || 0));
+  const buyPlan =
+    n > 0
+      ? `<button type="button" class="btn btn--ghost btn--sm biz-buy-plan" data-name="${escapeHtml(biz.name)}" data-to="${Math.min(biz.maxLevel, have + n)}" title="Отметить ${n} ур. по подсказке">Купил ${n} ${pluralLevels(n)}</button>`
+      : "";
   return `<div class="biz-row__lv">
     <button type="button" class="btn btn--ghost btn--sm biz-minus" data-name="${escapeHtml(biz.name)}" title="−1">−</button>
     <span class="biz-lv">${have}/${biz.maxLevel}</span>
     <button type="button" class="btn btn--ghost btn--sm biz-plus" data-name="${escapeHtml(biz.name)}" data-max="${biz.maxLevel}" title="+1">+</button>
+    ${buyPlan}
     <button type="button" class="btn btn--primary btn--sm biz-bought" data-name="${escapeHtml(biz.name)}" data-max="${biz.maxLevel}" title="Отметить все уровни">Скуплен</button>
   </div>`;
+}
+
+function pluralLevels(n) {
+  const abs = Math.abs(n) % 100;
+  const d = abs % 10;
+  if (abs > 10 && abs < 20) return "уровней";
+  if (d === 1) return "уровень";
+  if (d >= 2 && d <= 4) return "уровня";
+  return "уровней";
 }
 
 function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
@@ -505,7 +520,7 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
             <span class="biz-pill">${req}</span>
             <span class="muted">${escapeHtml(locName)}</span>
           </div>
-          ${bizControlsHtml(biz, have)}
+          ${bizControlsHtml(biz, have, g ? g.buys : 0)}
         </div>
         <div class="biz-plan__meta">${meta}</div>
         ${biz.coords ? `<code class="biz-coords">${escapeHtml(biz.coords)}</code>` : ""}`,
@@ -1006,6 +1021,9 @@ function init() {
     } else if (t.classList.contains("biz-plus")) {
       const max = Number(t.dataset.max || 99);
       setBizOwned(name, Math.min(max, have + 1));
+    } else if (t.classList.contains("biz-buy-plan")) {
+      const to = Number(t.dataset.to || have);
+      setBizOwned(name, to);
     } else if (t.classList.contains("biz-bought")) {
       const max = Number(t.dataset.max || 99);
       setBizOwned(name, max);
