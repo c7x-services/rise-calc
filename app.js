@@ -394,12 +394,22 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
     .join("");
 
   const best = plan.grouped[0];
-  const sum = best
-    ? `Иди в <strong>${escapeHtml(best.biz.name)}</strong> и скупи на баланс:
+  let sum;
+  if (best) {
+    const bestLoc = matchLocation(best.biz.location);
+    const bestLocName = bestLoc?.name || best.biz.location || "—";
+    const coords = best.biz.coords
+      ? ` · <code class="biz-coords">${escapeHtml(best.biz.coords)}</code>`
+      : "";
+    sum = `Иди в <strong>${escapeHtml(best.biz.name)}</strong>
+        <span class="muted">(${escapeHtml(bestLocName)}${coords})</span>
+        и скупи на баланс:
         Lv ${best.from}→${best.to} · −${formatMoney(Math.round(best.price))} ·
         +${formatIncome(best.incomeDelta)}/с
-        <span class="muted"> · ROI = полный выкуп одного бизнеса, не бегай по карте</span>`
-    : "На баланс нечего купить — копи или смени R";
+        <span class="muted"> · ROI = полный выкуп одного бизнеса, не бегай по карте</span>`;
+  } else {
+    sum = "На баланс нечего купить — копи или смени R";
+  }
 
   planEl.innerHTML = `
     <div class="biz-plan__sum">${sum}</div>
@@ -648,6 +658,21 @@ function init() {
   on("#btn-add-sec", "click", () => adjustBalanceBySeconds(1));
   on("#btn-sub-sec", "click", () => adjustBalanceBySeconds(-1));
   on("#edit-balance-sec", "input", updateBalanceSecHint);
+
+  function onEnter(sel, fn) {
+    on(sel, "keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      fn();
+    });
+  }
+  onEnter("#input-rebirth", onWizardNext);
+  onEnter("#input-balance", onWizardNext);
+  onEnter("#input-earnings", onContinue);
+  onEnter("#edit-rebirth", applyRebirthFromDashboard);
+  onEnter("#edit-earnings", applyEarningsFromDashboard);
+  onEnter("#edit-balance", setBalanceFromDashboard);
+  onEnter("#edit-balance-sec", () => adjustBalanceBySeconds(1));
 
   on("#biz-show-maxed", "change", (e) => {
     bizShowMaxed = Boolean(e.target.checked);
