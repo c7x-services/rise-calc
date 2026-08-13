@@ -483,7 +483,11 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
         meta = `<span class="muted">—</span>`;
       }
 
-      return `<li class="biz-plan__item${g ? " biz-plan__item--plan" : ""}${rank === 0 ? " biz-plan__item--best" : ""}" data-biz="${escapeHtml(biz.name)}">
+      return {
+        name: biz.name,
+        isBest: rank === 0,
+        className: `biz-plan__item${g ? " biz-plan__item--plan" : ""}${rank === 0 ? " biz-plan__item--best" : ""}`,
+        innerHtml: `
         <div class="biz-plan__top">
           <div class="biz-plan__main">
             <strong>${escapeHtml(biz.name)}</strong>
@@ -493,10 +497,9 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
           ${bizControlsHtml(biz, have)}
         </div>
         <div class="biz-plan__meta">${meta}</div>
-        ${biz.coords ? `<code class="biz-coords">${escapeHtml(biz.coords)}</code>` : ""}
-      </li>`;
-    })
-    .join("");
+        ${biz.coords ? `<code class="biz-coords">${escapeHtml(biz.coords)}</code>` : ""}`,
+      };
+    });
 
   const best = plan.grouped[0];
   let sum;
@@ -516,42 +519,77 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
     sum = "На баланс нечего купить — копи или смени R";
   }
 
-  const html = `
-    <div class="biz-plan__sum">${sum}</div>
-    <ol class="biz-plan__list">${
-      rows || `<p class="muted">Нет доступных бизнесов для R${acc.rebirth}.</p>`
-    }</ol>`;
-
-  animateBizPlanReorder(planEl, html);
+  animateBizPlanReorder(planEl, { sumHtml: sum, items: rows });
 
   if (ageEl) ageEl.textContent = "обновлено только что";
 }
 
-/** FLIP: existing cards slide to new slots; newcomers ease in. */
-function animateBizPlanReorder(planEl, html) {
-  const list = planEl.querySelector(".biz-plan__list");
-  const first = new Map();
-  if (list) {
-    for (const el of list.querySelectorAll(".biz-plan__item[data-biz]")) {
-      first.set(el.dataset.biz, el.getBoundingClientRect());
-    }
+/**
+ * Patch/reorder existing cards (keeps best-card shimmer alive).
+ * FLIP only when position changes.
+ */
+function animateBizPlanReorder(planEl, { sumHtml, items }) {
+  let sumEl = planEl.querySelector(".biz-plan__sum");
+  let list = planEl.querySelector(".biz-plan__list");
+  if (!sumEl || !list) {
+    planEl.innerHTML = `<div class="biz-plan__sum"></div><ol class="biz-plan__list"></ol>`;
+    sumEl = planEl.querySelector(".biz-plan__sum");
+    list = planEl.querySelector(".biz-plan__list");
   }
-  const scrollTop = list?.scrollTop ?? 0;
 
-  planEl.innerHTML = html;
+  sumEl.innerHTML = sumHtml;
 
-  const list2 = planEl.querySelector(".biz-plan__list");
-  if (list2) list2.scrollTop = scrollTop;
+  const first = new Map();
+  for (const el of list.querySelectorAll(".biz-plan__item[data-biz]")) {
+    first.set(el.dataset.biz, el.getBoundingClientRect());
+  }
+  const scrollTop = list.scrollTop;
 
-  if (
-    !list2 ||
-    typeof list2.querySelector !== "function" ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
+  const existing = new Map();
+  for (const el of [...list.querySelectorAll(".biz-plan__item[data-biz]")]) {
+    existing.set(el.dataset.biz, el);
+  }
+
+  const nextNames = new Set(items.map((i) => i.name));
+  for (const [name, el] of existing) {
+    if (!nextNames.has(name)) el.remove();
+  }
+
+  if (!items.length) {
+    list.innerHTML = `<p class="muted">Нет доступных бизнесов.</p>`;
     return;
   }
 
-  for (const el of list2.querySelectorAll(".biz-plan__item[data-biz]")) {
+  // Clear leftover empty-state message
+  for (const node of [...list.children]) {
+    if (!(node instanceof HTMLElement) || !node.dataset.biz) node.remove();
+  }
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const created = [];
+
+  for (const item of items) {
+    let el = existing.get(item.name);
+    if (el) {
+      el.className = item.className;
+      // Same <li> node → ::before shimmer keeps running if still best.
+      el.innerHTML = item.innerHtml;
+      list.appendChild(el);
+    } else {
+      el = document.createElement("li");
+      el.className = item.className;
+      el.dataset.biz = item.name;
+      el.innerHTML = item.innerHtml;
+      list.appendChild(el);
+      created.push(el);
+    }
+  }
+
+  list.scrollTop = scrollTop;
+
+  if (reduceMotion) return;
+
+  for (const el of list.querySelectorAll(".biz-plan__item[data-biz]")) {
     const prev = first.get(el.dataset.biz);
     const last = el.getBoundingClientRect();
     if (prev) {
@@ -561,11 +599,11 @@ function animateBizPlanReorder(planEl, html) {
         [{ transform: `translateY(${dy}px)` }, { transform: "translateY(0)" }],
         { duration: 480, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
       );
-    } else if (first.size) {
+    } else if (first.size && created.includes(el)) {
       el.animate(
         [
-          { opacity: 0, transform: "translateY(12px) scale(0.98)" },
-          { opacity: 1, transform: "translateY(0) scale(1)" },
+          { opacity: 0, transform: "translateY(12px)" },
+          { opacity: 1, transform: "translateY(0)" },
         ],
         { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
       );
