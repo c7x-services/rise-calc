@@ -452,12 +452,21 @@ code {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 
+.biz-plan {
+  position: relative;
+}
+
+.biz-plan__list-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
 .biz-plan__item--best {
   --gold: #ffd24a;
   --gold-soft: #e0b020;
   --gold-ink: #fff6c8;
   position: relative;
-  isolation: isolate;
   border-color: #f0c94a;
   background:
     linear-gradient(
@@ -474,11 +483,22 @@ code {
   color: var(--gold-ink);
 }
 
-.biz-plan__item--best::before {
-  content: "";
+.biz-plan__item--best:hover {
+  border-color: #ffe08a;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 70%, transparent),
+    0 12px 32px color-mix(in srgb, var(--gold) 28%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 40%, transparent);
+}
+
+/* Permanent overlay — animation never tied to list item DOM */
+.biz-gold-sheen {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
+  left: 0;
+  top: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 5;
   background:
     linear-gradient(
       105deg,
@@ -491,22 +511,12 @@ code {
     );
   background-size: 240% 100%;
   animation: gold-shimmer 3.2s linear infinite;
-  pointer-events: none;
-  z-index: 0;
   mix-blend-mode: soft-light;
+  will-change: transform;
 }
 
-.biz-plan__item--best > * {
-  position: relative;
-  z-index: 1;
-}
-
-.biz-plan__item--best:hover {
-  border-color: #ffe08a;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--gold) 70%, transparent),
-    0 12px 32px color-mix(in srgb, var(--gold) 28%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #fff 40%, transparent);
+.biz-gold-sheen[hidden] {
+  display: none !important;
 }
 
 @keyframes gold-shimmer {
@@ -519,7 +529,7 @@ code {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .biz-plan__item--best::before {
+  .biz-gold-sheen {
     animation: none;
     opacity: 0.35;
     background-position: 45% 0;

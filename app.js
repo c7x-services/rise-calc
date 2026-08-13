@@ -525,17 +525,15 @@ function renderBusinessHints({ rebuildList = false, forcePlan = false } = {}) {
 }
 
 /**
- * Patch/reorder existing cards (keeps best-card shimmer alive).
- * FLIP only when position changes.
+ * Patch/reorder cards. Gold sheen lives in a permanent overlay (never recreated),
+ * so list updates / FLIP cannot reset the shimmer animation.
  */
 function animateBizPlanReorder(planEl, { sumHtml, items }) {
-  let sumEl = planEl.querySelector(".biz-plan__sum");
-  let list = planEl.querySelector(".biz-plan__list");
-  if (!sumEl || !list) {
-    planEl.innerHTML = `<div class="biz-plan__sum"></div><ol class="biz-plan__list"></ol>`;
-    sumEl = planEl.querySelector(".biz-plan__sum");
-    list = planEl.querySelector(".biz-plan__list");
-  }
+  ensureBizPlanScaffold(planEl);
+  const sumEl = planEl.querySelector(".biz-plan__sum");
+  const wrap = planEl.querySelector(".biz-plan__list-wrap");
+  const list = planEl.querySelector(".biz-plan__list");
+  const sheen = planEl.querySelector(".biz-gold-sheen");
 
   sumEl.innerHTML = sumHtml;
 
@@ -557,58 +555,116 @@ function animateBizPlanReorder(planEl, { sumHtml, items }) {
 
   if (!items.length) {
     list.innerHTML = `<p class="muted">Нет доступных бизнесов.</p>`;
+    sheen.hidden = true;
     return;
   }
 
-  // Clear leftover empty-state message
   for (const node of [...list.children]) {
     if (!(node instanceof HTMLElement) || !node.dataset.biz) node.remove();
   }
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const created = [];
+  const frag = document.createDocumentFragment();
 
   for (const item of items) {
     let el = existing.get(item.name);
     if (el) {
-      el.className = item.className;
-      // Same <li> node → ::before shimmer keeps running if still best.
-      el.innerHTML = item.innerHtml;
-      list.appendChild(el);
+      if (el.className !== item.className) el.className = item.className;
+      if (el._bizHtml !== item.innerHtml) {
+        el.innerHTML = item.innerHtml;
+        el._bizHtml = item.innerHtml;
+      }
+      frag.appendChild(el);
     } else {
       el = document.createElement("li");
       el.className = item.className;
       el.dataset.biz = item.name;
+      el._bizHtml = item.innerHtml;
       el.innerHTML = item.innerHtml;
-      list.appendChild(el);
+      frag.appendChild(el);
       created.push(el);
     }
   }
+  list.appendChild(frag);
 
   list.scrollTop = scrollTop;
 
-  if (reduceMotion) return;
-
-  for (const el of list.querySelectorAll(".biz-plan__item[data-biz]")) {
-    const prev = first.get(el.dataset.biz);
-    const last = el.getBoundingClientRect();
-    if (prev) {
-      const dy = prev.top - last.top;
-      if (Math.abs(dy) < 0.5) continue;
-      el.animate(
-        [{ transform: `translateY(${dy}px)` }, { transform: "translateY(0)" }],
-        { duration: 480, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
-      );
-    } else if (first.size && created.includes(el)) {
-      el.animate(
-        [
-          { opacity: 0, transform: "translateY(12px)" },
-          { opacity: 1, transform: "translateY(0)" },
-        ],
-        { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
-      );
+  if (!reduceMotion) {
+    for (const el of list.querySelectorAll(".biz-plan__item[data-biz]")) {
+      const prev = first.get(el.dataset.biz);
+      const last = el.getBoundingClientRect();
+      if (prev) {
+        const dy = prev.top - last.top;
+        if (Math.abs(dy) < 0.5) continue;
+        el.animate(
+          [{ transform: `translateY(${dy}px)` }, { transform: "translateY(0)" }],
+          { duration: 480, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+        );
+      } else if (first.size && created.includes(el)) {
+        el.animate(
+          [
+            { opacity: 0, transform: "translateY(12px)" },
+            { opacity: 1, transform: "translateY(0)" },
+          ],
+          { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+        );
+      }
     }
   }
+
+  syncGoldSheen(planEl);
+  if (!reduceMotion) followGoldSheen(planEl, 520);
+
+  if (!wrap.dataset.sheenScrollBound) {
+    wrap.dataset.sheenScrollBound = "1";
+    list.addEventListener("scroll", () => syncGoldSheen(planEl), { passive: true });
+  }
+}
+
+function ensureBizPlanScaffold(planEl) {
+  if (planEl.querySelector(".biz-plan__list-wrap") && planEl.querySelector(".biz-gold-sheen")) {
+    return;
+  }
+  const prevSum = planEl.querySelector(".biz-plan__sum")?.innerHTML || "";
+  const prevItems = [...planEl.querySelectorAll(".biz-plan__item[data-biz]")];
+  planEl.innerHTML = `
+    <div class="biz-plan__sum"></div>
+    <div class="biz-plan__list-wrap">
+      <ol class="biz-plan__list"></ol>
+      <div class="biz-gold-sheen" hidden aria-hidden="true"></div>
+    </div>`;
+  planEl.querySelector(".biz-plan__sum").innerHTML = prevSum;
+  const list = planEl.querySelector(".biz-plan__list");
+  for (const el of prevItems) list.appendChild(el);
+}
+
+function syncGoldSheen(planEl) {
+  const wrap = planEl.querySelector(".biz-plan__list-wrap");
+  const sheen = planEl.querySelector(".biz-gold-sheen");
+  const best = planEl.querySelector(".biz-plan__item--best");
+  if (!wrap || !sheen) return;
+  if (!best) {
+    sheen.hidden = true;
+    return;
+  }
+  const wrapRect = wrap.getBoundingClientRect();
+  const bestRect = best.getBoundingClientRect();
+  sheen.hidden = false;
+  sheen.style.width = `${Math.max(0, bestRect.width)}px`;
+  sheen.style.height = `${Math.max(0, bestRect.height)}px`;
+  sheen.style.transform = `translate(${bestRect.left - wrapRect.left}px, ${bestRect.top - wrapRect.top}px)`;
+}
+
+let sheenFollowRaf = 0;
+function followGoldSheen(planEl, ms = 500) {
+  const start = performance.now();
+  cancelAnimationFrame(sheenFollowRaf);
+  const tick = (now) => {
+    syncGoldSheen(planEl);
+    if (now - start < ms) sheenFollowRaf = requestAnimationFrame(tick);
+  };
+  sheenFollowRaf = requestAnimationFrame(tick);
 }
 
 function updateBalanceSecHint() {
