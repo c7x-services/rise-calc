@@ -92,10 +92,48 @@
           </article>
         </div>
 
-        <div class="actions">
-          <button type="button" id="btn-update" class="btn btn--primary">Обновить данные</button>
-          <button type="button" id="btn-reset-session" class="btn btn--ghost">Сбросить накопление сессии</button>
-        </div>
+        <section class="card controls">
+          <h2 class="controls__title">Настройки</h2>
+
+          <div class="controls__row">
+            <label for="edit-rebirth">Перерождение</label>
+            <div class="controls__inline">
+              <input id="edit-rebirth" class="input input--compact" type="number" min="0" max="37" step="1" />
+              <button type="button" id="btn-apply-rebirth" class="btn btn--primary">Применить</button>
+            </div>
+            <p class="hint" id="hint-edit-rebirth"></p>
+          </div>
+
+          <div class="controls__row">
+            <label for="edit-earnings">Заработок / сек</label>
+            <div class="controls__inline">
+              <input id="edit-earnings" class="input input--compact" type="text" autocomplete="off" />
+              <button type="button" id="btn-apply-earnings" class="btn btn--primary">Применить</button>
+            </div>
+          </div>
+
+          <div class="controls__row">
+            <label for="edit-balance">Баланс</label>
+            <div class="controls__inline">
+              <input id="edit-balance" class="input input--compact" type="text" autocomplete="off" placeholder="из HUD" />
+              <button type="button" id="btn-set-balance" class="btn btn--primary">Установить</button>
+              <button type="button" id="btn-reset-balance" class="btn btn--ghost">Сбросить</button>
+            </div>
+            <p class="hint">«Сбросить» — баланс в 0</p>
+          </div>
+
+          <div class="controls__row">
+            <label for="edit-balance-sec">Коррекция дохода</label>
+            <div class="controls__inline">
+              <input id="edit-balance-sec" class="input input--compact input--sec" type="number" min="0" step="1" placeholder="N" />
+              <button type="button" id="btn-sub-sec" class="btn btn--ghost">−N сек</button>
+              <button type="button" id="btn-add-sec" class="btn btn--primary">+N сек</button>
+            </div>
+            <p class="hint" id="hint-balance-sec">± заработок × N к балансу</p>
+          </div>
+
+          <p class="error hidden" id="dashboard-error"></p>
+        </section>
       </section>
 
       <!-- Business hints placeholder -->

@@ -221,16 +221,52 @@ code {
   flex-wrap: wrap;
 }
 
+.input--compact {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.input--sec {
+  max-width: 6rem;
+  flex: 0 0 auto;
+}
+
+.controls__title {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.controls__row {
+  margin-bottom: 1.1rem;
+}
+
+.controls__row:last-child {
+  margin-bottom: 0;
+}
+
+.controls__row > label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.controls__inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.controls .hint {
+  margin: 0.45rem 0 0;
+}
+
 .error {
   color: var(--danger);
   font-size: 0.9rem;
   margin-top: 0.75rem;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
 .hints__head {

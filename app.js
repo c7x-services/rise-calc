@@ -33,11 +33,21 @@ const $ = (sel) => document.querySelector(sel);
 const wizardEl = $("#wizard");
 const dashboardEl = $("#dashboard");
 const wizardError = $("#wizard-error");
+const dashboardError = $("#dashboard-error");
 const accountSelect = $("#account-select");
 
-function showError(msg) {
+function showWizardError(msg) {
   wizardError.textContent = msg;
   wizardError.classList.toggle("hidden", !msg);
+}
+
+function showDashboardError(msg) {
+  dashboardError.textContent = msg;
+  dashboardError.classList.toggle("hidden", !msg);
+}
+
+function showError(msg) {
+  showWizardError(msg);
 }
 
 function activeAccount() {
@@ -140,6 +150,82 @@ function renderDashboard() {
   $("#stat-earnings").textContent = acc.earningsRaw ? `+${acc.earningsRaw}/с` : "—";
   $("#stat-session").textContent = formatMoney(sessionEarned);
   $("#stat-session-detail").textContent = "только пока вкладка открыта (можно свернуть)";
+
+  $("#edit-rebirth").value = String(acc.rebirth);
+  $("#hint-edit-rebirth").textContent = describeTarget(acc.rebirth);
+  $("#edit-earnings").value = acc.earningsRaw || "";
+  $("#edit-balance").value = acc.balanceRaw || "";
+  updateBalanceSecHint();
+  showDashboardError("");
+}
+
+function updateBalanceSecHint() {
+  const acc = activeAccount();
+  const n = Math.max(0, Math.floor(Number($("#edit-balance-sec").value) || 0));
+  const delta = acc.earningsPerSec * n;
+  const el = $("#hint-balance-sec");
+  if (!acc.earningsPerSec) {
+    el.textContent = "Задайте заработок, чтобы считать ±N сек";
+    return;
+  }
+  el.textContent =
+    n > 0
+      ? `±${formatMoney(delta)} (${formatMoney(acc.earningsPerSec)}/с × ${n} сек)`
+      : "± заработок × N к балансу";
+}
+
+function applyBalancePatch(patch) {
+  updateAccount(state, patch);
+  renderDashboard();
+}
+
+function applyRebirthFromDashboard() {
+  const n = Number($("#edit-rebirth").value);
+  if (!Number.isInteger(n) || n < 0 || n > MAX_REBIRTH) {
+    showDashboardError(`Перерождение: 0–${MAX_REBIRTH}`);
+    return;
+  }
+  applyBalancePatch({ rebirth: n });
+}
+
+function applyEarningsFromDashboard() {
+  const raw = $("#edit-earnings").value.trim();
+  const m = parseMoney(raw);
+  if (!m) {
+    showDashboardError("Не удалось разобрать заработок");
+    return;
+  }
+  applyBalancePatch({ earningsRaw: m.raw, earningsPerSec: m.nominal });
+}
+
+function setBalanceFromDashboard() {
+  const raw = $("#edit-balance").value.trim();
+  const m = parseBalance(raw);
+  if (!m) {
+    showDashboardError("Не удалось разобрать баланс");
+    return;
+  }
+  applyBalancePatch({ balanceRaw: m.raw, balance: m.lower });
+}
+
+function resetBalanceToZero() {
+  applyBalancePatch({ balance: 0, balanceRaw: "0" });
+}
+
+function adjustBalanceBySeconds(sign) {
+  const acc = activeAccount();
+  const n = Math.floor(Number($("#edit-balance-sec").value) || 0);
+  if (n <= 0) {
+    showDashboardError("Укажите N > 0");
+    return;
+  }
+  if (acc.earningsPerSec <= 0) {
+    showDashboardError("Заработок не задан");
+    return;
+  }
+  const delta = acc.earningsPerSec * n * sign;
+  const next = Math.max(0, acc.balance + delta);
+  applyBalancePatch({ balance: next });
 }
 
 function tick() {
@@ -291,12 +377,20 @@ function init() {
   $("#btn-continue").addEventListener("click", onContinue);
   $("#input-earnings").addEventListener("input", updateEarningsElapsedHint);
 
-  $("#btn-update").addEventListener("click", () => openWizard(true));
-
-  $("#btn-reset-session").addEventListener("click", () => {
-    sessionEarned = 0;
-    renderDashboard();
+  $("#btn-apply-rebirth").addEventListener("click", applyRebirthFromDashboard);
+  $("#edit-rebirth").addEventListener("input", () => {
+    const n = Number($("#edit-rebirth").value) || 0;
+    $("#hint-edit-rebirth").textContent = describeTarget(
+      Math.min(MAX_REBIRTH, Math.max(0, n))
+    );
   });
+  $("#btn-apply-earnings").addEventListener("click", applyEarningsFromDashboard);
+  $("#btn-set-balance").addEventListener("click", setBalanceFromDashboard);
+  $("#btn-reset-balance").addEventListener("click", resetBalanceToZero);
+  $("#btn-add-sec").addEventListener("click", () => adjustBalanceBySeconds(1));
+  $("#btn-sub-sec").addEventListener("click", () => adjustBalanceBySeconds(-1));
+  $("#edit-balance-sec").addEventListener("input", updateBalanceSecHint);
+  $("#edit-earnings").addEventListener("input", updateBalanceSecHint);
 
   accountSelect.addEventListener("change", () => {
     switchAccount(accountSelect.value);
